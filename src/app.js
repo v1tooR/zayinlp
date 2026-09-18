@@ -70,8 +70,11 @@
   /* ---------------------------------------------------------
      Links de WhatsApp com mensagem pronta
      --------------------------------------------------------- */
+  // sem cidade escolhida, a mensagem termina com "Minha cidade:" para a pessoa completar no WhatsApp
+  const CITY_ASK = CITY ? '' : '\nMinha cidade: ';
   $$('[data-wa]').forEach(a => {
-    a.href = wa(a.dataset.waPhone || PAGE_PHONE, a.dataset.wa);
+    const text = a.dataset.wa + (/Estou em /.test(a.dataset.wa) ? '' : CITY_ASK);
+    a.href = wa(a.dataset.waPhone || PAGE_PHONE, text);
     a.target = '_blank';
     a.rel = 'noopener';
   });
@@ -89,8 +92,15 @@
   /* ---------------------------------------------------------
      Header, menu da cidade, drawer, nav ativa
      --------------------------------------------------------- */
+  // na home o header fica transparente sobre o vídeo e ganha fundo assim que a página rola
   const header = $('.header');
-  const onScrollHeader = () => header.classList.toggle('is-scrolled', scrollY > 8);
+  const overHero = header.classList.contains('is-over');
+  let menuOpen = false;
+  const onScrollHeader = () => {
+    const scrolled = scrollY > 16;
+    header.classList.toggle('is-scrolled', scrolled);
+    if (overHero) header.classList.toggle('is-over', !scrolled && !menuOpen);
+  };
   onScrollHeader();
 
   const cityBtn = $('.city-btn');
@@ -105,6 +115,9 @@
   const drawer = $('#drawer');
   const menuBtn = $('.menu-toggle');
   const setDrawer = open => {
+    menuOpen = open;
+    header.classList.toggle('is-menu', open);
+    onScrollHeader();
     drawer.classList.toggle('is-open', open);
     menuBtn.setAttribute('aria-expanded', String(open));
     menuBtn.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
@@ -127,59 +140,26 @@
   navLinks.forEach(l => { const el = document.getElementById(l.getAttribute('href').slice(1)); if (el) navIO.observe(el); });
 
   /* ---------------------------------------------------------
-     Hero: entrada + jogo de imagens
+     Hero: entrada + vídeo de fundo
      --------------------------------------------------------- */
   const hero = $('.hero');
-  const start = () => hero && hero.classList.add('is-ready');
+  const start = () => { header.classList.add('is-ready'); if (hero) hero.classList.add('is-ready'); };
   if (document.fonts && document.fonts.ready) {
     Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 900))]).then(start);
   } else start();
 
-  const hm = $('.hm');
-  if (hm) {
-    const slides = $$('.hm-slide', hm);
-    const dots = $$('.hm-dots button', hm);
-    const label = $('.hm-label', hm);
-    const stage = $('.hm-stage', hm);
-    let idx = 0;
-
-    const show = i => {
-      idx = (i + slides.length) % slides.length;
-      slides.forEach((s, k) => s.classList.toggle('is-active', k === idx));
-      dots.forEach((d, k) => d.setAttribute('aria-pressed', String(k === idx)));
-      label.textContent = dots[idx].dataset.label;
-    };
-    dots.forEach((d, k) => {
-      d.addEventListener('click', () => show(k));
-      // a barrinha do slide ativo termina de encher -> próximo ambiente
-      d.querySelector('i').addEventListener('animationend', () => {
-        if (!reduce && d.getAttribute('aria-pressed') === 'true') show(idx + 1);
-      });
-    });
-
-    if (reduce) hm.classList.add('is-static');
-
-    // pausa fora da tela, com a aba escondida e enquanto a pessoa olha a foto
-    let inView = true, hovering = false;
-    const syncPause = () => hm.classList.toggle('is-paused', !inView || hovering || document.hidden);
-    new IntersectionObserver(([en]) => { inView = en.isIntersecting; syncPause(); }).observe(hm);
-    document.addEventListener('visibilitychange', syncPause);
-    stage.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') { hovering = true; syncPause(); } });
-    stage.addEventListener('pointerleave', () => { hovering = false; syncPause(); });
-    hm.addEventListener('focusin', () => { hovering = true; syncPause(); });
-    hm.addEventListener('focusout', () => { hovering = false; syncPause(); });
-
-    // arrastar para o lado troca o ambiente (toque)
-    let x0 = null;
-    stage.style.touchAction = 'pan-y';
-    stage.addEventListener('pointerdown', e => { x0 = e.clientX; });
-    stage.addEventListener('pointerup', e => {
-      if (x0 === null) return;
-      const dx = e.clientX - x0;
-      x0 = null;
-      if (Math.abs(dx) > 40) show(idx + (dx < 0 ? 1 : -1));
-    });
-
+  // vídeo de fundo: o aparelho "liga" uma vez e fica parado no último quadro;
+  // volta a tocar quando a pessoa sobe de novo até o topo
+  const hv = $('.hv-video');
+  if (hv && !reduce) {
+    let ended = false;
+    const play = () => { const pr = hv.play(); if (pr && pr.catch) pr.catch(() => {}); };
+    hv.addEventListener('ended', () => { ended = true; });
+    const begin = () => { hv.preload = 'auto'; play(); };
+    if (document.readyState === 'complete') begin(); else addEventListener('load', begin, { once: true });
+    new IntersectionObserver(([en]) => {
+      if (en.isIntersecting && ended) { ended = false; hv.currentTime = 0; play(); }
+    }, { threshold: 0.5 }).observe(hv);
   }
 
   /* botões magnéticos (só mouse) */
@@ -273,7 +253,7 @@
       const btu = Number(fd.get('btu'));
       const citySlug = fd.get('cidade');
       const c = CITIES.find(x => x.slug === citySlug);
-      const cityName = c ? c.name : (citySlug === 'litoral' ? 'Litoral Norte' : 'outra cidade');
+      const cityName = c ? c.name : ({ litoral: 'Litoral Norte', outra: 'outra cidade' }[citySlug] || '');
       const nome = String(fd.get('nome') || '').trim().slice(0, 40);
       const lines = [
         `Olá, vim do seu site e quero um orçamento.${nome ? ` Meu nome é ${nome}.` : ''}`,
@@ -282,7 +262,7 @@
       ];
       if (svc !== 'infra') lines.push(`Capacidade: ${btu ? fmt(btu) + ' BTUs' : 'preciso de ajuda para escolher'}`);
       lines.push(`Quantidade: ${qtd} ${qtd > 1 ? 'aparelhos' : 'aparelho'}`);
-      lines.push(`Cidade: ${cityName}`);
+      lines.push(cityName ? `Cidade: ${cityName}` : 'Minha cidade: ');
       return { text: lines.join('\n'), phone: (c && c.phone) || DEFAULT_PHONE, label: (c && c.phoneLabel) || Z.defaultPhoneLabel };
     };
 
@@ -321,7 +301,7 @@
     const fBrand = $('#f-brand');
     const fBtu = $('#f-btu');
     const brandBtns = $$('.brand-btn');
-    const PAGE = 8;
+    const PAGE = 12;                                   // 4x3 no computador, 2x6 no celular
     const state = { type: 'all', brand: 'all', btu: 'all', limit: PAGE };
 
     [...new Set(PRODUCTS.map(p => p.brand))].sort().forEach(b => fBrand.add(new Option(b, b)));
@@ -331,7 +311,7 @@
     const brandMark = name => {
       const b = BRANDS[name];
       if (!b) return `<span class="p-brand">${name}</span>`;
-      const w = Math.round(Math.sqrt(640 * b.ratio)), h = Math.round(Math.sqrt(640 / b.ratio));
+      const w = Math.round(Math.sqrt(520 * b.ratio)), h = Math.round(Math.sqrt(520 / b.ratio));
       return `<span class="p-brand"><svg width="${w}" height="${h}" role="img" aria-label="${b.name}"><use href="#b-${b.slug}"/></svg></span>`;
     };
 
@@ -343,16 +323,29 @@
     };
 
     const productText = (p, withInstall) =>
-      `Olá, vim do seu site, quero fazer um orçamento do ${fullName(p)}${p.code ? ` (${p.code})` : ''} de ${fmt(p.btu)} BTUs${p.mode ? ` (${MODE[p.mode].toLowerCase()})` : ''}${withInstall ? ', com instalação' : ''}.${CITY ? ` Estou em ${CITY.name}.` : ''}`;
+      `Olá, vim do seu site, quero fazer um orçamento do ${fullName(p)}${p.code ? ` (${p.code})` : ''} de ${fmt(p.btu)} BTUs${p.mode ? ` (${MODE[p.mode].toLowerCase()})` : ''}${withInstall ? ', com instalação' : ''}.${CITY ? ` Estou em ${CITY.name}.` : CITY_ASK}`;
 
-    const filtered = () => PRODUCTS.filter(p =>
-      (state.type === 'all' || p.type === state.type) &&
-      (state.brand === 'all' || p.brand === state.brand) &&
-      (state.btu === 'all' || p.btu === Number(state.btu)));
+    // abertura do catálogo: começa pelos hi-wall mais vendidos e já mostra piso teto e cassete
+    const DESTAQUE = [
+      'samsung-hiwall-12000', 'lg-hiwall-9000', 'elgin-pisoteto-36000', 'midea-cassete-24000',
+      'midea-hiwall-12000', 'elgin-hiwall-9000', 'samsung-cassete-36000-qf', 'midea-pisoteto-60000',
+      'lg-hiwall-12000-qf', 'elgin-hiwall-18000', 'gree-cassete-36000', 'gree-pisoteto-36000',
+    ];
+    const rank = p => { const i = DESTAQUE.indexOf(p.img); return i < 0 ? DESTAQUE.length : i; };
+    const isFiltered = () => state.type !== 'all' || state.brand !== 'all' || state.btu !== 'all';
+
+    const filtered = () => {
+      const list = PRODUCTS.filter(p =>
+        (state.type === 'all' || p.type === state.type) &&
+        (state.brand === 'all' || p.brand === state.brand) &&
+        (state.btu === 'all' || p.btu === Number(state.btu)));
+      return isFiltered() ? list : list.slice().sort((a, b) => rank(a) - rank(b));
+    };
 
     const card = (p, i, animate) => {
-      const feats = p.feats.map(f => `<li>${f}</li>`).join('') + (p.mode ? `<li class="${p.mode === 'quente' ? 'hot' : ''}">${MODE[p.mode]}</li>` : '');
-      const id = `inst-${i}`;
+      // todos são inverter: o selo não ajuda a escolher, então o card mostra só o que diferencia
+      const feats = p.feats.filter(f => f !== 'Inverter').map(f => `<li>${f}</li>`).join('')
+        + (p.mode ? `<li class="${p.mode === 'quente' ? 'hot' : ''}">${MODE[p.mode]}</li>` : '');
       const alt = `${fullName(p)} de ${fmt(p.btu)} BTUs`;
       return `<article class="product${animate ? ' is-enter' : ''}" style="--d:${animate ? Math.min(i, 8) * 0.05 : 0}s" data-i="${PRODUCTS.indexOf(p)}">
         <div class="p-art">
@@ -365,9 +358,9 @@
           ${p.code ? `<p class="p-code">${p.code}</p>` : ''}
           <p class="p-btu"><b>${fmt(p.btu)}</b><span>BTUs</span></p>
           <ul class="p-feats">${feats}</ul>
-          <div class="p-install"><label class="switch" for="${id}"><input type="checkbox" id="${id}" checked><span class="track"></span>Incluir instalação</label></div>
+          <button type="button" class="p-inst" aria-pressed="true"><span class="box"><svg aria-hidden="true"><use href="#i-tick"/></svg></span>Com instalação</button>
           <a class="btn btn-wa btn-block" href="${wa(PAGE_PHONE, productText(p, true))}" target="_blank" rel="noopener">
-            <svg aria-hidden="true"><use href="#i-wa"/></svg>Pedir orçamento
+            <svg aria-hidden="true"><use href="#i-wa"/></svg><span class="t-full">Pedir orçamento</span><span class="t-short">Orçamento</span>
           </a>
         </div>
       </article>`;
@@ -380,7 +373,7 @@
         const tipo = state.type === 'all' ? 'ar-condicionado' : TYPE_FULL[state.type];
         const marca = state.brand === 'all' ? '' : ` ${state.brand}`;
         const cap = state.btu === 'all' ? '' : ` de ${fmt(state.btu)} BTUs`;
-        const txt = `Olá, vim do seu site e procuro um ${tipo}${marca}${cap}. Vocês têm?${CITY ? ` Estou em ${CITY.name}.` : ''}`;
+        const txt = `Olá, vim do seu site e procuro um ${tipo}${marca}${cap}. Vocês têm?${CITY ? ` Estou em ${CITY.name}.` : CITY_ASK}`;
         grid.innerHTML = `<div class="empty"><h3>Nenhum aparelho com esses filtros</h3><p>Trabalhamos com outros modelos além dos listados. Peça pelo WhatsApp o que você procura ou limpe os filtros.</p><a class="btn btn-wa" href="${wa(PAGE_PHONE, txt)}" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-wa"/></svg>Pedir esse modelo</a></div>`;
       } else {
         grid.innerHTML = visible.map((p, i) => card(p, i, animate && !reduce)).join('');
@@ -423,11 +416,14 @@
       render(false);
       if (!reduce) $$('.product', grid).slice(before).forEach((el, i) => { el.classList.add('is-enter'); el.style.setProperty('--d', `${i * 0.05}s`); });
     });
-    grid.addEventListener('change', e => {
-      if (!e.target.matches('.p-install input')) return;
-      const item = e.target.closest('.product');
-      const p = PRODUCTS[Number(item.dataset.i)];
-      $('.btn', item).href = wa(PAGE_PHONE, productText(p, e.target.checked));
+    // "Com instalação" liga/desliga e a mensagem do WhatsApp acompanha
+    grid.addEventListener('click', e => {
+      const inst = e.target.closest('.p-inst');
+      if (!inst) return;
+      const on = inst.getAttribute('aria-pressed') !== 'true';
+      inst.setAttribute('aria-pressed', String(on));
+      const item = inst.closest('.product');
+      $('.btn', item).href = wa(PAGE_PHONE, productText(PRODUCTS[Number(item.dataset.i)], on));
     });
     render(false);
 
@@ -482,6 +478,18 @@
       grid.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
     });
     compute();
+  }
+
+  /* diferenciais: pontinhos do carrossel no celular acompanham o arraste */
+  const perkGrid = $('.perk-grid');
+  const perkDots = $$('.perk-dots i');
+  if (perkGrid && perkDots.length) {
+    const syncDots = () => {
+      const max = perkGrid.scrollWidth - perkGrid.clientWidth;
+      const i = max > 0 ? Math.round((perkGrid.scrollLeft / max) * (perkDots.length - 1)) : 0;
+      perkDots.forEach((d, k) => d.classList.toggle('is-on', k === i));
+    };
+    perkGrid.addEventListener('scroll', () => requestAnimationFrame(syncDots), { passive: true });
   }
 
   /* ano no rodapé */

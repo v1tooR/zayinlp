@@ -1,6 +1,11 @@
-<!-- ============ HERO ============ -->
-<section class="hero">
-  <div class="wrap hero-grid">
+<!-- ============ HERO: vídeo de fundo ============ -->
+<section class="hero hero-video">
+  <div class="hv-media" aria-hidden="true">
+    <video class="hv-video" muted playsinline preload="none" poster="{{ROOT}}video/hero-poster.webp" width="1920" height="1080">
+      <source src="{{ROOT}}video/hero.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="wrap hv-inner">
     <div class="hero-copy">
       <p class="kicker" data-in style="--d:.05s">
         <svg aria-hidden="true"><use href="#i-snow"/></svg>
@@ -11,57 +16,12 @@
         <span class="ln"><span style="--d:.22s">instalado com garantia</span></span>
         <span class="ln accent"><span style="--d:.32s">{{H1_CITY}}</span></span>
       </h1>
-      <p class="lede" data-in style="--d:.5s">Hi-wall, piso teto e cassete das marcas líderes. Você escolhe o aparelho, recebe rápido e a equipe da Zayin instala dentro da norma técnica, com garantia no serviço.</p>
+      <p class="lede" data-in style="--d:.5s">Hi-wall, piso teto e cassete das marcas líderes, instalados pela equipe da Zayin.</p>
       <div class="hero-ctas" data-in style="--d:.62s">
         <a class="btn btn-wa magnetic" data-wa="Olá, vim do seu site e quero um orçamento de ar-condicionado com instalação.{{MSG_CITY}}" href="#">
           <svg aria-hidden="true"><use href="#i-wa"/></svg>Pedir orçamento
         </a>
-        <a class="btn btn-ghost" href="#aparelhos">Ver aparelhos<svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
-      </div>
-      <ul class="assure" data-in style="--d:.74s">
-        <li><svg aria-hidden="true"><use href="#i-check"/></svg>Revenda autorizada</li>
-        <li><svg aria-hidden="true"><use href="#i-check"/></svg>Entrega rápida</li>
-        <li><svg aria-hidden="true"><use href="#i-check"/></svg>Residencial e comercial</li>
-      </ul>
-    </div>
-
-    <div class="hm" role="group" aria-roledescription="galeria" aria-label="Ar-condicionado instalado em diferentes ambientes">
-      <div class="hm-stage">
-        <figure class="hm-slide is-active" style="--pos:38% 50%">
-          <img src="https://images.pexels.com/photos/6487938/pexels-photo-6487938.jpeg?auto=compress&cs=tinysrgb&w=1000" srcset="https://images.pexels.com/photos/6487938/pexels-photo-6487938.jpeg?auto=compress&cs=tinysrgb&w=700 700w, https://images.pexels.com/photos/6487938/pexels-photo-6487938.jpeg?auto=compress&cs=tinysrgb&w=1200 1200w" sizes="(max-width: 900px) 92vw, 560px" alt="Quarto claro com ar-condicionado split acima da janela" width="1000" height="690" fetchpriority="high">
-        </figure>
-        <figure class="hm-slide" style="--pos:40% 50%">
-          <img src="https://images.pexels.com/photos/6588599/pexels-photo-6588599.jpeg?auto=compress&cs=tinysrgb&w=1000" srcset="https://images.pexels.com/photos/6588599/pexels-photo-6588599.jpeg?auto=compress&cs=tinysrgb&w=700 700w, https://images.pexels.com/photos/6588599/pexels-photo-6588599.jpeg?auto=compress&cs=tinysrgb&w=1200 1200w" sizes="(max-width: 900px) 92vw, 560px" alt="Sala de estar com ar-condicionado split instalado no alto da parede" width="1000" height="667" loading="lazy">
-        </figure>
-        <figure class="hm-slide" style="--pos:62% 50%">
-          <img src="https://images.pexels.com/photos/8606302/pexels-photo-8606302.jpeg?auto=compress&cs=tinysrgb&w=1000" srcset="https://images.pexels.com/photos/8606302/pexels-photo-8606302.jpeg?auto=compress&cs=tinysrgb&w=700 700w, https://images.pexels.com/photos/8606302/pexels-photo-8606302.jpeg?auto=compress&cs=tinysrgb&w=1200 1200w" sizes="(max-width: 900px) 92vw, 560px" alt="Sala de reunião com ar-condicionado split na parede" width="1000" height="662" loading="lazy">
-        </figure>
-        <figure class="hm-slide" style="--pos:92% 50%">
-          <img src="https://images.pexels.com/photos/6316067/pexels-photo-6316067.jpeg?auto=compress&cs=tinysrgb&w=1000" srcset="https://images.pexels.com/photos/6316067/pexels-photo-6316067.jpeg?auto=compress&cs=tinysrgb&w=700 700w, https://images.pexels.com/photos/6316067/pexels-photo-6316067.jpeg?auto=compress&cs=tinysrgb&w=1200 1200w" sizes="(max-width: 900px) 92vw, 560px" alt="Sala integrada com ar-condicionado split acima da TV" width="1000" height="668" loading="lazy">
-        </figure>
-        <div class="hm-bar">
-          <span class="hm-label" aria-live="polite">Quarto</span>
-          <div class="hm-dots">
-            <button type="button" aria-label="Quarto" aria-pressed="true" data-label="Quarto"><i></i></button>
-            <button type="button" aria-label="Sala de estar" aria-pressed="false" data-label="Sala de estar"><i></i></button>
-            <button type="button" aria-label="Escritório" aria-pressed="false" data-label="Escritório"><i></i></button>
-            <button type="button" aria-label="Sala integrada" aria-pressed="false" data-label="Sala integrada"><i></i></button>
-          </div>
-        </div>
-      </div>
-      <div class="hm-thumbs">
-        <figure class="hm-thumb">
-          <img src="https://images.pexels.com/photos/38788452/pexels-photo-38788452.jpeg?auto=compress&cs=tinysrgb&w=500" alt="Evaporadora de ar-condicionado split instalada na parede" width="500" height="333">
-          <figcaption>Evaporadora</figcaption>
-        </figure>
-        <figure class="hm-thumb">
-          <img src="https://images.pexels.com/photos/39318564/pexels-photo-39318564.jpeg?auto=compress&cs=tinysrgb&w=500" alt="Condensadora de ar-condicionado fixada em parede externa" width="500" height="333">
-          <figcaption>Condensadora</figcaption>
-        </figure>
-      </div>
-      <div class="hm-badge hm-badge-1">
-        <span class="ico"><svg aria-hidden="true"><use href="#i-truck"/></svg></span>
-        <div><b>Entrega rápida</b><small>{{REGION}}</small></div>
+        <a class="btn btn-glass" href="#aparelhos">Ver aparelhos<svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
       </div>
     </div>
   </div>
@@ -85,7 +45,7 @@
         <p class="eyebrow">Aparelhos à venda</p>
         <h2 class="h-section">Escolha seu <span class="nw">ar-condicionado</span> e receba instalado</h2>
       </div>
-      <p class="lede">Escolha o modelo e peça o orçamento, com ou sem instalação. A mensagem já chega para a nossa equipe com o aparelho que você escolheu.</p>
+      <p class="lede">Todos inverter, das marcas líderes. Escolha o modelo e peça o orçamento, com ou sem instalação: a mensagem já chega com o aparelho escolhido.</p>
     </div>
 
     <div class="toolbar" data-reveal role="group" aria-label="Filtrar aparelhos">
@@ -159,12 +119,13 @@
 <!-- ============ DIFERENCIAIS ============ -->
 <section class="perks" aria-label="Por que comprar com a Zayin">
   <div class="wrap">
-    <ul class="perk-grid">
+    <ul class="perk-grid" tabindex="0" aria-label="Diferenciais da Zayin">
       <li class="perk" data-reveal style="--d:0s"><span class="ico"><svg aria-hidden="true"><use href="#i-truck"/></svg></span><div><h3>Entrega rápida</h3><p>Escolha o aparelho, receba com agilidade e agende a instalação com a mesma equipe.</p></div></li>
       <li class="perk" data-reveal style="--d:.08s"><span class="ico"><svg aria-hidden="true"><use href="#i-shield"/></svg></span><div><h3>Instalação com garantia</h3><p>6 meses de garantia no serviço, feito dentro da norma técnica.</p></div></li>
       <li class="perk" data-reveal style="--d:.16s"><span class="ico"><svg aria-hidden="true"><use href="#i-badge"/></svg></span><div><h3>Revenda autorizada</h3><p>Aparelhos das marcas líderes, com até 10 anos de garantia na condensadora.</p></div></li>
       <li class="perk" data-reveal style="--d:.24s"><span class="ico"><svg aria-hidden="true"><use href="#i-pin"/></svg></span><div><h3>Atendimento na região</h3><p>Vale do Paraíba, Mogi das Cruzes e Litoral Norte.</p></div></li>
     </ul>
+    <div class="perk-dots" aria-hidden="true"><i class="is-on"></i><i></i><i></i><i></i></div>
   </div>
 </section>
 

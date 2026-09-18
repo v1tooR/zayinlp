@@ -42,7 +42,8 @@ BRANDS = [
     {"slug": "gree", "name": "Gree"},
 ]
 
-KICKER = "Compra e Instalação com garantia. Entrega rápida."
+# frase do destaque no topo da home: texto definido pela Zayin, não alterar
+KICKER = "Autorizado a venda, instalação com garantia."
 
 # fotos oficiais dos aparelhos (assets/products/*.webp -> dist/img/produtos/)
 PRODUCT_IMG_DIR = "img/produtos"
@@ -157,7 +158,7 @@ def build_page(city, kind, css, js, logo, logo_w, brands, root_prefix=None):
         h1_city = "no Vale do Paraíba"
         msg_city = ""
         city_btn = "Sua cidade"
-        city_btn_short = "Cidade"
+        city_btn_short = "Sua cidade"
         region = "Vale do Paraíba, Mogi e litoral"
         final_p = "Chame a Zayin e receba seu orçamento pelo WhatsApp."
 
@@ -192,9 +193,10 @@ def build_page(city, kind, css, js, logo, logo_w, brands, root_prefix=None):
     nav_html = "\n      ".join(f'<a href="{h}">{esc(t)}</a>' for h, t in nav)
     drawer_html = "\n  ".join(f'<a class="dl" href="{h}">{esc(t)}</a>' for h, t in drawer)
 
-    sel = cur or "saojosedoscampos"
-    opts = [f'<option value="{c}"{" selected" if c == sel else ""}>{esc(next(x["name"] for x in CITIES if x["slug"] == c))}</option>'
-            for c in BUILDER_ORDER]
+    # sem cidade na página, o montador não presume nenhuma: a pessoa escolhe
+    opts = [] if cur else ['<option value="" selected>Selecione sua cidade</option>']
+    opts += [f'<option value="{c}"{" selected" if c == cur else ""}>{esc(next(x["name"] for x in CITIES if x["slug"] == c))}</option>'
+             for c in BUILDER_ORDER]
     opts += ['<option value="litoral">Litoral Norte</option>', '<option value="outra">Outra cidade</option>']
     city_options = "\n              ".join(opts)
 
@@ -293,12 +295,15 @@ def build_page(city, kind, css, js, logo, logo_w, brands, root_prefix=None):
         "{{CANON}}": canon,
         "{{KIND}}": kind,
         "{{KICKER}}": esc(kicker),
+        # na home o header começa transparente, por cima do vídeo
+        "{{HEADER_CLASS}}": " is-over" if is_home else "",
         "{{H1_CITY}}": esc(h1_city),
         "{{REGION}}": esc(region),
         "{{MSG_CITY}}": esc(msg_city),
         "{{CITY_BTN}}": esc(city_btn),
         "{{CITY_BTN_SHORT}}": esc(city_btn_short),
         "{{FINAL_P}}": esc(final_p),
+        "{{ROOT}}": root,
         "{{HOME_HREF}}": home_href,
         "{{SVC_HREF}}": svc_href,
         "{{HOME_PREFIX}}": home_prefix,
@@ -336,6 +341,14 @@ def write(path, content):
     print("ok", path, path.stat().st_size // 1024, "KB")
 
 
+def copy_video():
+    src = ROOT / "assets" / "video"
+    dst = DIST / "video"
+    dst.mkdir(parents=True, exist_ok=True)
+    for f in sorted(src.glob("hero*.*")):
+        shutil.copyfile(f, dst / f.name)
+
+
 def copy_product_images():
     src = ROOT / "assets" / "products"
     dst = DIST / PRODUCT_IMG_DIR
@@ -352,6 +365,7 @@ def main():
     logo_w = data_uri(ROOT / "assets" / "logo-white.webp")
     brands = load_brands()
     print("ok", copy_product_images(), "fotos de aparelhos ->", DIST / PRODUCT_IMG_DIR)
+    copy_video()
     for city in [None] + CITIES:
         base = DIST / city["slug"] if city else DIST
         write(base / "index.html", build_page(city, "home", css, js, logo, logo_w, brands))
