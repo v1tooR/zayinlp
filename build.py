@@ -155,7 +155,8 @@ def build_page(city, kind, css, js, logo, logo_w, brands, root_prefix=None):
         region = f"{name} e região"
         final_p = f"Chame a Zayin em {name} e receba seu orçamento pelo WhatsApp."
     else:
-        h1_city = "no Vale do Paraíba"
+        # home sem cidade fala do país; a página de serviços segue regional
+        h1_city = "em todo o Brasil" if is_home else "no Vale do Paraíba"
         msg_city = ""
         city_btn = "Sua cidade"
         city_btn_short = "Sua cidade"
