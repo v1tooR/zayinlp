@@ -40,6 +40,7 @@ BRANDS = [
     {"slug": "midea", "name": "Midea"},
     {"slug": "elgin", "name": "Elgin"},
     {"slug": "gree", "name": "Gree"},
+    {"slug": "daikin", "name": "Daikin"},
 ]
 
 # frase do destaque no topo da home: texto definido pela Zayin, não alterar

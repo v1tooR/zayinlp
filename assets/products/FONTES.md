@@ -6,6 +6,42 @@ pela marca. Arquivos em `assets/products/<arquivo>.webp` (recortados e padroniza
 Levantado em 17/09/2026. Confirme com a Zayin quais modelos estão realmente à venda antes de publicar.
 
 
+## Daikin
+
+Levantado em 20/09/2026 na loja oficial. A Daikin publica **uma foto por linha**, então as capacidades
+de 9.000 a 18.000 dividem a mesma imagem, assim como as duas de 24.000 e as duas do cassete — o recorte
+usa só a evaporadora, como nas demais marcas.
+
+- **Full Inverter** · hi-wall · 9.000 BTUs · só frio
+  `daikin-hiwall-9000.webp` · Ar Condicionado 9000 Btus Split Hi Wall Daikin Full Inverter Frio 220V
+  Sem código no card: a loja publica `STKC09T5VL` no campo "Código", mas a descrição da mesma página cita
+  `FTHC09T5VL/RHC09T5VL` (que é o par quente/frio). Confirmar com a Daikin antes de exibir.
+  Fonte: https://loja.daikin.com.br/ar-condicionado-9000-btus-split-hi-wall-daikin-full-inverter-frio-220v.html
+- **Full Inverter — FTKC12T5VL/RKC12T5VL** · hi-wall · 12.000 BTUs · só frio
+  `daikin-hiwall-12000.webp` · Ar Condicionado 12000 Btus Split Hi Wall Daikin Full Inverter Frio 220V
+  Fonte: https://loja.daikin.com.br/ar-condicionado-12000-btus-split-hi-wall-daikin-full-inverter-frio-220v.html
+- **Full Inverter — FTHC12T5VL/RHC12T5VL** · hi-wall · 12.000 BTUs · quente e frio
+  `daikin-hiwall-12000-qf.webp` · Ar Condicionado 12000 Btus Split Hi Wall Daikin Full Inverter Quente e Frio 220V
+  Fonte: https://loja.daikin.com.br/ar-condicionado-12000-btus-split-hi-wall-daikin-full-inverter-quente-e-frio-220v.html
+- **Full Inverter — FTKC18T5VL/RKC18T5VL** · hi-wall · 18.000 BTUs · só frio
+  `daikin-hiwall-18000.webp` · Ar Condicionado 18000 Btus Split Hi Wall Daikin Full Inverter Frio 220V
+  Fonte: https://loja.daikin.com.br/ar-condicionado-18000-btus-split-hi-wall-daikin-full-inverter-frio-220v.html
+- **Full Inverter — FTKC24T5VL/RKC24T5VL** · hi-wall · 24.000 BTUs · só frio
+  `daikin-hiwall-24000.webp` · Ar Condicionado 24000 Btus Split Hi Wall Daikin Full Inverter Frio 220V
+  Fonte: https://loja.daikin.com.br/ar-condicionado-24000-btus-split-hi-wall-daikin-full-inverter-frio-220v.html
+- **Full Inverter — FTHC24T5VL/RHC24T5VL** · hi-wall · 24.000 BTUs · quente e frio
+  `daikin-hiwall-24000-qf.webp` · Ar Condicionado 24000 Btus Split Hi Wall Daikin Full Inverter Quente e Frio 220V
+  Fonte: https://loja.daikin.com.br/ar-condicionado-24000-btus-split-hi-wall-daikin-full-inverter-quente-e-frio-220v.html
+- **Sky Air Cassete 4 vias — FCQA30A5VL/RZAQ30BVL** · cassete · 30.000 BTUs · quente e frio
+  `daikin-cassete-30000-qf.webp` · Ar Condicionado Cassete 30000 Btus Inverter 4 Vias Daikin Sky Air R-32 Quente e Frio 220V
+  Fonte: https://loja.daikin.com.br/ar-condicionado-cassete-30000-btus-inverter-4-vias-daikin-sky-air-r-32-quente-e-frio-220v.html
+- **Sky Air Cassete 4 vias — FCQA36A5VL/RZAQ36BVL** · cassete · 36.000 BTUs · quente e frio
+  `daikin-cassete-36000-qf.webp` · Ar Condicionado Daikin Sky Air Cassete 4 Vias 36000 Btus Inverter R-32 Quente e Frio 220V
+  Fonte: https://loja.daikin.com.br/ar-condicionado-daikin-sky-air-cassete-4-vias-35000-btus-inverter-r-32-quente-e-frio-220v.html
+
+Sem piso teto: a loja oficial da Daikin não vende essa configuração — na faixa equivalente ela trabalha
+com duto (Sky Air). Se a Zayin quiser oferecer, dá para entrar como duto ou sob encomenda.
+
 ## Elgin
 
 - **Eco Inverter 3 Wi-Fi — ELG-45HJFI09C2WG** · hi-wall · 9.000 BTUs · só frio  

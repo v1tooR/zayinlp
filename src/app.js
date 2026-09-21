@@ -28,21 +28,27 @@
      Fontes de cada modelo: assets/products/FONTES.md
      --------------------------------------------------------- */
   const PRODUCTS = [
+    { type: 'hiwall',    brand: 'Daikin',    line: 'Full Inverter',                      btu:   9000, mode: 'frio',    code: '',                     img: 'daikin-hiwall-9000',           feats: ['Inverter'] },
     { type: 'hiwall',    brand: 'Elgin',     line: 'Eco Inverter 3 Wi-Fi',               btu:   9000, mode: 'frio',    code: 'ELG-45HJFI09C2WG',     img: 'elgin-hiwall-9000',            feats: ['Inverter', 'Wi-Fi'] },
     { type: 'hiwall',    brand: 'LG',        line: 'Dual Inverter Voice AI',             btu:   9000, mode: 'frio',    code: 'S3-Q09AA31A',          img: 'lg-hiwall-9000',               feats: ['Inverter', 'Wi-Fi'] },
     { type: 'hiwall',    brand: 'Midea',     line: 'AI Ecomaster',                       btu:   9000, mode: 'frio',    code: '42EFVCA09M8',          img: 'midea-hiwall-9000',            feats: ['Inverter', 'Wi-Fi'] },
     { type: 'hiwall',    brand: 'Samsung',   line: 'WindFree AI Pro',                    btu:   9000, mode: 'quente',  code: '',                     img: 'samsung-hiwall-9000-qf',       feats: ['Inverter', 'Wi-Fi'] },
+    { type: 'hiwall',    brand: 'Daikin',    line: 'Full Inverter',                      btu:  12000, mode: 'frio',    code: 'FTKC12T5VL/RKC12T5VL', img: 'daikin-hiwall-12000',          feats: ['Inverter'] },
+    { type: 'hiwall',    brand: 'Daikin',    line: 'Full Inverter',                      btu:  12000, mode: 'quente',  code: 'FTHC12T5VL/RHC12T5VL', img: 'daikin-hiwall-12000-qf',       feats: ['Inverter'] },
     { type: 'hiwall',    brand: 'Elgin',     line: 'Eco Inverter 3 Wi-Fi',               btu:  12000, mode: 'frio',    code: 'ELG-45HJFI12C2WG',     img: 'elgin-hiwall-12000',           feats: ['Inverter', 'Wi-Fi'] },
     { type: 'hiwall',    brand: 'Gree',      line: 'G-Classic Inverter',                 btu:  12000, mode: 'frio',    code: '',                     img: 'gree-hiwall-12000',            feats: ['Inverter'] },
     { type: 'hiwall',    brand: 'LG',        line: 'Dual Inverter Voice +AI',            btu:  12000, mode: 'quente',  code: 'S3-W12JA33B',          img: 'lg-hiwall-12000-qf',           feats: ['Inverter', 'Wi-Fi'] },
     { type: 'hiwall',    brand: 'Midea',     line: 'AI Ecomaster',                       btu:  12000, mode: 'frio',    code: '42EFVCA12M8',          img: 'midea-hiwall-12000',           feats: ['Inverter', 'Wi-Fi'] },
     { type: 'hiwall',    brand: 'Samsung',   line: 'WindFree AI Pro',                    btu:  12000, mode: 'frio',    code: 'AR60H12D1AWNAZ',       img: 'samsung-hiwall-12000',         feats: ['Inverter', 'Wi-Fi'] },
+    { type: 'hiwall',    brand: 'Daikin',    line: 'Full Inverter',                      btu:  18000, mode: 'frio',    code: 'FTKC18T5VL/RKC18T5VL', img: 'daikin-hiwall-18000',          feats: ['Inverter'] },
     { type: 'hiwall',    brand: 'Elgin',     line: 'Eco Inverter 3 Wi-Fi',               btu:  18000, mode: 'frio',    code: 'ELG-45HJFI18C2WG',     img: 'elgin-hiwall-18000',           feats: ['Inverter', 'Wi-Fi'] },
     { type: 'hiwall',    brand: 'LG',        line: 'Dual Inverter Voice AI',             btu:  18000, mode: 'frio',    code: 'S3-Q18KL31B',          img: 'lg-hiwall-18000',              feats: ['Inverter', 'Wi-Fi'] },
     { type: 'hiwall',    brand: 'Midea',     line: 'AI Ecomaster',                       btu:  18000, mode: 'frio',    code: '42EZVCA18M5',          img: 'midea-hiwall-18000',           feats: ['Inverter', 'Wi-Fi'] },
     { type: 'hiwall',    brand: 'Samsung',   line: 'WindFree AI',                        btu:  18000, mode: 'frio',    code: 'AR60F18D1AWNAZ',       img: 'samsung-hiwall-18000',         feats: ['Inverter', 'Wi-Fi'] },
     { type: 'hiwall',    brand: 'Samsung',   line: 'WindFree AI',                        btu:  18000, mode: 'quente',  code: 'AR60F18C1AWNAZ',       img: 'samsung-hiwall-18000-qf',      feats: ['Inverter', 'Wi-Fi'] },
     { type: 'cassete',   brand: 'Samsung',   line: 'Cassete 4 vias WindFree',            btu:  18000, mode: '',        code: 'AC018HE4DKG/AZ',       img: 'samsung-cassete-18000',        feats: ['Inverter', 'Wi-Fi'] },
+    { type: 'hiwall',    brand: 'Daikin',    line: 'Full Inverter',                      btu:  24000, mode: 'frio',    code: 'FTKC24T5VL/RKC24T5VL', img: 'daikin-hiwall-24000',          feats: ['Inverter'] },
+    { type: 'hiwall',    brand: 'Daikin',    line: 'Full Inverter',                      btu:  24000, mode: 'quente',  code: 'FTHC24T5VL/RHC24T5VL', img: 'daikin-hiwall-24000-qf',       feats: ['Inverter'] },
     { type: 'hiwall',    brand: 'Elgin',     line: 'Eco Inverter 3 Wi-Fi',               btu:  24000, mode: 'quente',  code: 'ELG-45HJQI24C2WG',     img: 'elgin-hiwall-24000-qf',        feats: ['Inverter', 'Wi-Fi'] },
     { type: 'hiwall',    brand: 'Gree',      line: 'G-Classic Inverter',                 btu:  24000, mode: 'quente',  code: '',                     img: 'gree-hiwall-24000-qf',         feats: ['Inverter'] },
     { type: 'hiwall',    brand: 'LG',        line: 'Dual Inverter Voice AI',             btu:  24000, mode: 'frio',    code: 'S3-Q24K231B',          img: 'lg-hiwall-24000',              feats: ['Inverter', 'Wi-Fi'] },
@@ -53,9 +59,11 @@
     { type: 'cassete',   brand: 'Midea',     line: 'Cassete 4 vias Inverter',            btu:  24000, mode: 'frio',    code: '40KVQF24M5',           img: 'midea-cassete-24000',          feats: ['Inverter'] },
     { type: 'hiwall',    brand: 'Elgin',     line: 'Eco Inverter 3 Wi-Fi',               btu:  30000, mode: 'frio',    code: 'ELG-45HJFI30C2WG',     img: 'elgin-hiwall-30000',           feats: ['Inverter', 'Wi-Fi'] },
     { type: 'hiwall',    brand: 'Midea',     line: 'XtremeSave',                         btu:  30000, mode: 'quente',  code: '42AGVQC30M5',          img: 'midea-hiwall-30000-qf',        feats: ['Inverter', 'Wi-Fi'] },
+    { type: 'cassete',   brand: 'Daikin',    line: 'Sky Air Cassete 4 vias',             btu:  30000, mode: 'quente',  code: 'FCQA30A5VL/RZAQ30BVL', img: 'daikin-cassete-30000-qf',      feats: ['Inverter'] },
     { type: 'pisoteto',  brand: 'Elgin',     line: 'Piso Teto Eco Inverter',             btu:  36000, mode: 'frio',    code: 'ELG-45PVFC36C2DAVA',   img: 'elgin-pisoteto-36000',         feats: ['Inverter'] },
     { type: 'pisoteto',  brand: 'Gree',      line: 'G-Prime Inverter Compact',           btu:  36000, mode: '',        code: '',                     img: 'gree-pisoteto-36000',          feats: ['Inverter'] },
     { type: 'pisoteto',  brand: 'Midea',     line: 'Split Teto Inverter',                btu:  36000, mode: 'frio',    code: '42ZQVD36M5',           img: 'midea-pisoteto-36000',         feats: ['Inverter'] },
+    { type: 'cassete',   brand: 'Daikin',    line: 'Sky Air Cassete 4 vias',             btu:  36000, mode: 'quente',  code: 'FCQA36A5VL/RZAQ36BVL', img: 'daikin-cassete-36000-qf',      feats: ['Inverter'] },
     { type: 'cassete',   brand: 'Elgin',     line: 'Cassete Eco Inverter',               btu:  36000, mode: 'quente',  code: 'ELG-45KVFC36C2NAVA',   img: 'elgin-cassete-36000-qf',       feats: ['Inverter'] },
     { type: 'cassete',   brand: 'Gree',      line: 'G-Prime Inverter Plus',              btu:  36000, mode: '',        code: '',                     img: 'gree-cassete-36000',           feats: ['Inverter'] },
     { type: 'cassete',   brand: 'Samsung',   line: 'Cassete 4 vias WindFree',            btu:  36000, mode: 'quente',  code: 'AC036HE4DKG/AZ',       img: 'samsung-cassete-36000-qf',     feats: ['Inverter', 'Wi-Fi'] },
@@ -328,7 +336,7 @@
     // abertura do catálogo: começa pelos hi-wall mais vendidos e já mostra piso teto e cassete
     const DESTAQUE = [
       'samsung-hiwall-12000', 'lg-hiwall-9000', 'elgin-pisoteto-36000', 'midea-cassete-24000',
-      'midea-hiwall-12000', 'elgin-hiwall-9000', 'samsung-cassete-36000-qf', 'midea-pisoteto-60000',
+      'daikin-hiwall-12000', 'elgin-hiwall-9000', 'samsung-cassete-36000-qf', 'midea-pisoteto-60000',
       'lg-hiwall-12000-qf', 'elgin-hiwall-18000', 'gree-cassete-36000', 'gree-pisoteto-36000',
     ];
     const rank = p => { const i = DESTAQUE.indexOf(p.img); return i < 0 ? DESTAQUE.length : i; };
