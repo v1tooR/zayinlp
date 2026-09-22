@@ -1,20 +1,27 @@
-<!-- ============ CIDADES ============ -->
+<!-- ============ UNIDADES E CIDADES (mapa) ============ -->
 <section class="section" id="cidades">
   <div class="wrap">
     <div class="section-head split" data-reveal>
       <div>
-        <p class="eyebrow">Onde atendemos</p>
-        <h2 class="h-section">Atendemos o Vale do Paraíba, Mogi e o litoral</h2>
+        <p class="eyebrow">Onde estamos</p>
+        <h2 class="h-section">Unidades no Vale do Paraíba, atendimento até o litoral</h2>
       </div>
-      <p class="lede">Escolha sua cidade para ver a página com o contato certo.</p>
+      <p class="lede">A Zayin tem unidades em São José dos Campos e em Jacareí e atende também Taubaté, Pindamonhangaba, Caçapava, Mogi das Cruzes e o Litoral Norte.</p>
     </div>
-    <nav class="route" aria-label="Cidades atendidas" data-reveal>
-      <span class="route-road">Ao longo da Via Dutra, de Mogi a Pinda</span>
-      {{ROUTE}}
-    </nav>
+    <div class="locator" data-reveal>
+      <div class="loc-chips" role="group" aria-label="Ver no mapa">
+        {{LOC_CHIPS}}
+      </div>
+      <div class="loc-grid">
+        <div class="loc-map-wrap">
+          <div class="loc-map" id="mapa" role="region" aria-label="Mapa das unidades da Zayin"><p class="loc-wait">Carregando o mapa…</p></div>
+          <p class="loc-note" id="locNote" aria-live="polite">{{LOC_NOTE}}</p>
+        </div>
+        <div class="units">
+        {{UNITS}}
+        </div>
+      </div>
+    </div>
     <p class="branch" data-reveal><svg aria-hidden="true"><use href="#i-road"/></svg>Litoral Norte também é atendido. Fale com a gente pelo WhatsApp.</p>
-    <div class="contacts">
-      {{CONTACTS}}
-    </div>
   </div>
 </section>

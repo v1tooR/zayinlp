@@ -156,18 +156,60 @@
     Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 900))]).then(start);
   } else start();
 
-  // vídeo de fundo: o aparelho "liga" uma vez e fica parado no último quadro;
-  // volta a tocar quando a pessoa sobe de novo até o topo
+  const playSafe = v => { const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); };
+  // botão de pausar/tocar dos vídeos em loop; onUser avisa quando a pessoa pausou de propósito
+  const bindToggle = (v, btn, onUser) => {
+    const sync = () => {
+      const on = !v.paused;
+      btn.setAttribute('aria-label', on ? 'Pausar vídeo' : 'Tocar vídeo');
+      btn.querySelector('use').setAttribute('href', on ? '#i-pause' : '#i-play');
+    };
+    v.addEventListener('play', sync);
+    v.addEventListener('pause', sync);
+    btn.addEventListener('click', () => {
+      const pause = !v.paused;
+      onUser(pause);
+      if (pause) v.pause(); else playSafe(v);
+    });
+    btn.hidden = false;
+    sync();
+  };
+
+  // vídeo de fundo. Computador: o aparelho "liga" uma vez e fica parado no último quadro,
+  // voltando a tocar quando a pessoa sobe até o topo. Celular: showroom das marcas em loop.
   const hv = $('.hv-video');
   if (hv && !reduce) {
-    let ended = false;
-    const play = () => { const pr = hv.play(); if (pr && pr.catch) pr.catch(() => {}); };
+    const small = matchMedia('(max-width: 900px)').matches;
+    const src = (small && hv.dataset.srcSm) || hv.dataset.src;
+    hv.loop = small;
+    let ended = false, started = false, userPaused = false;
+    hv.addEventListener('playing', () => hv.classList.add('is-on'), { once: true });
     hv.addEventListener('ended', () => { ended = true; });
-    const begin = () => { hv.preload = 'auto'; play(); };
+    const begin = () => { started = true; hv.src = src; hv.preload = 'auto'; playSafe(hv); };
     if (document.readyState === 'complete') begin(); else addEventListener('load', begin, { once: true });
     new IntersectionObserver(([en]) => {
-      if (en.isIntersecting && ended) { ended = false; hv.currentTime = 0; play(); }
-    }, { threshold: 0.5 }).observe(hv);
+      if (!started) return;
+      const visible = en.intersectionRatio >= 0.5;
+      if (hv.loop) {
+        // fora da tela o loop para, para não gastar bateria
+        if (!visible) hv.pause(); else if (!userPaused) playSafe(hv);
+      } else if (visible && ended) { ended = false; hv.currentTime = 0; playSafe(hv); }
+    }, { threshold: [0, 0.5] }).observe(hv);
+    const hvBtn = $('.hv-toggle');
+    if (hvBtn && hv.loop) bindToggle(hv, hvBtn, p => { userPaused = p; });
+  }
+
+  // vídeo da Zayin na seção de instalação: carrega perto da tela e toca só enquanto aparece
+  const reel = $('.reel');
+  if (reel) {
+    let loaded = false;
+    let userPaused = reduce;                      // com movimento reduzido, só toca se a pessoa pedir
+    const load = () => { if (!loaded) { loaded = true; reel.src = reel.dataset.src; } };
+    new IntersectionObserver(([en]) => {
+      if (en.isIntersecting) load();
+      if (en.intersectionRatio >= 0.35) { if (!userPaused) playSafe(reel); } else reel.pause();
+    }, { threshold: [0, 0.35], rootMargin: '200px 0px' }).observe(reel);
+    bindToggle(reel, reel.parentElement.querySelector('.vid-toggle'), p => { userPaused = p; if (!p) load(); });
   }
 
   /* botões magnéticos (só mouse) */
@@ -498,6 +540,135 @@
       perkDots.forEach((d, k) => d.classList.toggle('is-on', k === i));
     };
     perkGrid.addEventListener('scroll', () => requestAnimationFrame(syncDots), { passive: true });
+  }
+
+  /* ---------------------------------------------------------
+     Mapa das unidades. Sem cidade na página mostra todas; com cidade, mostra a de lá.
+     Leaflet + OpenStreetMap, carregados só quando a seção chega perto da tela.
+     --------------------------------------------------------- */
+  const mapEl = $('#mapa');
+  if (mapEl) {
+    const UNITS = Z.units || [];
+    const NOTES = Z.locNotes || {};
+    const byCity = Object.fromEntries(CITIES.map(c => [c.slug, c]));
+    const byUnit = Object.fromEntries(UNITS.map(u => [u.slug, u]));
+    const note = $('#locNote');
+    const chips = $$('.loc-chips button');
+    const cards = $$('.unit');
+    const layers = {};                                 // slug -> { ll, setOn }
+    let map = null;
+    let current = (CITY && CITY.slug) || 'all';
+    const pageHref = h => (location.protocol === 'file:' ? h.replace(/\/$/, '/index.html') : h);
+
+    const applyView = animate => {
+      if (!map) return;
+      const city = byCity[current];
+      const fly = animate && !reduce;
+      if (city && byUnit[current]) {
+        const ll = layers[current].ll;
+        if (fly) map.flyTo(ll, 13, { duration: 0.9 }); else map.setView(ll, 13);
+        return;
+      }
+      // todas as unidades, ou a cidade junto com a unidade que atende lá.
+      // Margem maior em cima (rótulo das unidades) e à direita (nome das cidades)
+      const pts = city ? [layers[current].ll, layers[city.unit].ll] : Object.values(layers).map(l => l.ll);
+      const opts = { paddingTopLeft: [70, 70], paddingBottomRight: [80, 40], maxZoom: 12 };
+      if (fly) map.flyToBounds(pts, { ...opts, duration: 0.9 }); else map.fitBounds(pts, opts);
+    };
+
+    const select = (slug, animate) => {
+      current = slug;
+      const city = byCity[slug];
+      const unitSlug = city ? city.unit : null;
+      chips.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.loc === slug)));
+      cards.forEach(c => c.classList.toggle('is-current', c.dataset.unit === unitSlug));
+      note.textContent = NOTES[slug] || NOTES.all || '';
+      if (city && !(CITY && CITY.slug === slug)) {
+        const a = document.createElement('a');
+        a.href = pageHref(city.href);
+        a.textContent = `Ver a página de ${city.name}`;
+        note.append(' ', a);
+      }
+      Object.entries(layers).forEach(([k, l]) => l.setOn(k === slug || k === unitSlug));
+      applyView(animate);
+    };
+    chips.forEach(b => b.addEventListener('click', () => select(b.dataset.loc, true)));
+
+    const initMap = L => {
+      mapEl.textContent = '';
+      map = L.map(mapEl, {
+        center: [-23.2, -45.9], zoom: 9,                  // já com posição, para os marcadores existirem ao ser criados
+        scrollWheelZoom: false,
+        dragging: !matchMedia('(pointer: coarse)').matches,  // no celular um dedo rola a página; dois dedos dão zoom
+        zoomSnap: 0.25,
+      });
+      map.attributionControl.setPrefix(false);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',
+      }).addTo(map);
+
+      UNITS.forEach(u => {
+        const left = u.tip === 'left';
+        const icon = L.divIcon({
+          className: 'mk', html: '<span class="mk-unit"><svg aria-hidden="true"><use href="#i-snow"/></svg></span>',
+          iconSize: [40, 40], iconAnchor: [20, 46], tooltipAnchor: left ? [-24, -26] : [0, -50],
+        });
+        const m = L.marker([u.lat, u.lng], { icon, title: `Unidade Zayin ${u.name}`, riseOnHover: true }).addTo(map);
+        m.bindTooltip(`Zayin ${u.short}`, { permanent: true, direction: left ? 'left' : 'top', className: 'mk-label is-unit' });
+        m.on('click', () => select(u.slug, true));
+        layers[u.slug] = {
+          ll: [u.lat, u.lng],
+          setOn: on => {
+            m.getElement().classList.toggle('is-on', on);
+            m.getTooltip().getElement().classList.toggle('is-on', on);
+          },
+        };
+      });
+      const dot = (lat, lng, name, style, side = 'right') => {
+        const m = L.circleMarker([lat, lng], { radius: 7, weight: 2.5, color: '#005094', fillColor: '#fff', fillOpacity: 1, ...style }).addTo(map);
+        m.bindTooltip(name, { permanent: true, direction: side, offset: [side === 'left' ? -8 : 8, 0], className: 'mk-label' });
+        return m;
+      };
+      CITIES.filter(c => !byUnit[c.slug]).forEach(c => {
+        const m = dot(c.lat, c.lng, c.short);
+        m.on('click', () => select(c.slug, true));
+        layers[c.slug] = {
+          ll: [c.lat, c.lng],
+          setOn: on => {
+            m.setStyle({ fillColor: on ? '#005094' : '#fff' });
+            m.setRadius(on ? 9 : 7);
+            m.getTooltip().getElement().classList.toggle('is-on', on);
+          },
+        };
+      });
+      // litoral: atendido, sem página própria; entra na vista geral
+      if (Z.litoral) {
+        dot(Z.litoral.lat, Z.litoral.lng, Z.litoral.name, { color: '#506279', weight: 2, dashArray: '3 3' }, 'left');
+        layers.litoral = { ll: [Z.litoral.lat, Z.litoral.lng], setOn: () => {} };
+      }
+      select(current, false);
+    };
+
+    const LEAFLET = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/';
+    const addTag = (tag, attrs) => new Promise((res, rej) => {
+      const el = Object.assign(document.createElement(tag), attrs, { crossOrigin: 'anonymous', referrerPolicy: 'no-referrer', onload: res, onerror: rej });
+      document.head.appendChild(el);
+    });
+    const loadLeaflet = () => Promise.all([
+      addTag('link', { rel: 'stylesheet', href: `${LEAFLET}leaflet.min.css`, integrity: 'sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw==' }),
+      addTag('script', { src: `${LEAFLET}leaflet.min.js`, integrity: 'sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g==' }),
+    ]).then(() => window.L);
+
+    select(current, false);
+    const mapIO = new IntersectionObserver(([en]) => {
+      if (!en.isIntersecting) return;
+      mapIO.disconnect();
+      loadLeaflet().then(initMap).catch(() => {
+        mapEl.innerHTML = '<p class="loc-wait">Não foi possível carregar o mapa. Os endereços e as rotas estão nos cards das unidades.</p>';
+      });
+    }, { rootMargin: '400px 0px' });
+    mapIO.observe(mapEl);
   }
 
   /* ano no rodapé */

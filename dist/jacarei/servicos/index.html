@@ -18,6 +18,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
 <link rel="preconnect" href="https://images.pexels.com">
+
 <script>document.documentElement.classList.add('js')</script>
 <style>
 /* =========================================================
@@ -296,11 +297,30 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   background: #26344d;
 }
 .hv-media { position: absolute; inset: 0; z-index: -1; overflow: hidden; }
-.hv-video {
-  width: 100%; height: 100%; object-fit: cover; object-position: 72% 55%;
+/* capa (antes do vídeo carregar e sem JS) e vídeo com o mesmo enquadramento e o mesmo zoom lento */
+.hv-media::before, .hv-video {
+  position: absolute; inset: 0; width: 100%; height: 100%;
   transform: scale(1.06); animation: hvzoom 16s cubic-bezier(.2, .6, .35, 1) forwards;
 }
+.hv-media::before { content: ""; background: var(--poster) 72% 55% / cover no-repeat; }
+.hv-video { object-fit: cover; object-position: 72% 55%; opacity: 0; transition: opacity .9s ease; }
+.hv-video.is-on { opacity: 1; }
 @keyframes hvzoom { to { transform: scale(1); } }
+
+/* pausar/tocar vídeo em loop */
+.vid-toggle {
+  position: absolute; z-index: 3;
+  width: 40px; height: 40px; border: 0; border-radius: 50%;
+  display: grid; place-items: center; color: #fff;
+  background: rgba(6, 43, 82, .42); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .35);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  transition: background-color .2s ease;
+}
+.vid-toggle:hover { background: rgba(6, 43, 82, .7); }
+.vid-toggle[hidden] { display: none; }
+.vid-toggle svg { width: 16px; height: 16px; }
+.hv-toggle { top: calc(var(--header-h) + 8px); right: var(--gutter); }
+.hero .t-short { display: none; }
 .hv-media::after {
   content: ""; position: absolute; inset: 0;
   background:
@@ -359,12 +379,32 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 @media (max-width: 900px) {
   .hero-grid { grid-template-columns: 1fr; }
   .svc-hero-photo .hm-badge { left: 12px; bottom: 12px; }
-  .hero-video { min-height: clamp(540px, calc(100svh - 120px), 760px); align-items: flex-end; }
-  .hv-video { object-position: 40% 50%; }
-  .hv-media::after {
-    background: linear-gradient(180deg, rgba(6, 43, 82, .35) 0%, rgba(6, 43, 82, .7) 45%, rgba(6, 43, 82, .92) 100%);
+  /* celular: showroom na tela inteira, pouco texto e os botões no pé da seção */
+  .hero-video {
+    min-height: 100vh; min-height: 100svh; align-items: flex-end;
+    border-radius: 0 0 28px 28px; overflow: hidden;
   }
-  .hv-inner { padding-block: 48px 64px; }
+  .hv-media::before { background-image: var(--poster-sm, var(--poster)); background-position: 50% 50%; }
+  .hv-video { object-position: 50% 50%; }
+  .hv-media::after {
+    background:
+      linear-gradient(180deg, rgba(6, 43, 82, .5) 0%, rgba(6, 43, 82, 0) 22%),
+      linear-gradient(0deg, rgba(6, 43, 82, .94) 0%, rgba(6, 43, 82, .7) 30%, rgba(6, 43, 82, 0) 60%);
+  }
+  .hv-inner { padding-block: 0 28px; }
+  .hero-video .hero-copy { max-width: 520px; margin-inline: auto; text-align: center; }
+  .hero-video .kicker {
+    padding: 0; background: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none;
+    font-size: 14px; font-weight: 560; color: rgba(255, 255, 255, .88);
+  }
+  .hero-video h1 { margin-top: 10px; font-size: clamp(26px, 7vw, 42px); }
+  .hero-video .lede { display: none; }
+  .hero-video .hero-ctas { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 22px; }
+  .hero-video .hero-ctas .btn { min-height: 50px; padding: 0 12px; gap: 8px; font-size: 15.5px; }
+}
+@media (max-width: 560px) {
+  .hero .t-full { display: none; }
+  .hero .t-short { display: inline; }
 }
 @media (max-width: 560px) {
   .hm-badge { padding: 8px 14px 8px 8px; gap: 10px; border-radius: 14px; }
@@ -480,9 +520,14 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .si-list .go { width: 18px; height: 18px; color: var(--blue); transition: transform .3s var(--ease-out); }
 .si-list a:hover .go { transform: translateX(3px); }
 .si-body .hero-ctas { margin-top: 28px; }
+/* vídeo da Zayin no lugar da foto: vertical, toca sozinho quando aparece na tela */
+.si-reel { background: var(--duct); }
+.si-reel video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.si-reel .vid-toggle { top: 16px; right: 16px; }
 @media (max-width: 900px) {
   .si-grid { grid-template-columns: 1fr; }
   .si-photo { aspect-ratio: 16 / 11; }
+  .si-reel { aspect-ratio: 4 / 5; }
 }
 @media (max-width: 560px) {
   .si-list { grid-template-columns: 1fr; }
@@ -837,15 +882,15 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
 .w-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(28px, 5vw, 72px); align-items: center; }
 .w-photo { position: relative; border-radius: var(--r-xl); overflow: hidden; aspect-ratio: 4 / 5; background: linear-gradient(160deg, #4BA3DD, #EAF3FB 70%); }
 .w-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.w-photo .stamp, .si-photo .stamp {
+.w-photo .stamp, .si-photo .stamp, .about-photo .stamp {
   position: absolute; left: 20px; bottom: 20px; right: 20px;
   display: flex; align-items: center; gap: 14px;
   padding: 14px 18px; border-radius: 18px; background: rgba(255, 255, 255, .94);
   backdrop-filter: blur(8px);
 }
-.w-photo .stamp svg, .si-photo .stamp svg { width: 40px; height: 40px; color: var(--blue); flex: none; }
-.w-photo .stamp b, .si-photo .stamp b { display: block; color: var(--duct); font-size: 16px; line-height: 1.25; }
-.w-photo .stamp span, .si-photo .stamp span { font-size: 14px; color: var(--muted); }
+.w-photo .stamp svg, .si-photo .stamp svg, .about-photo .stamp svg { width: 40px; height: 40px; color: var(--blue); flex: none; }
+.w-photo .stamp b, .si-photo .stamp b, .about-photo .stamp b { display: block; color: var(--duct); font-size: 16px; line-height: 1.25; }
+.w-photo .stamp span, .si-photo .stamp span, .about-photo .stamp span { font-size: 14px; color: var(--muted); }
 .scale { margin-top: 36px; }
 .scale-axis { display: flex; justify-content: space-between; margin-left: 170px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
 .w-row { display: grid; grid-template-columns: 170px 1fr; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--line); }
@@ -874,8 +919,8 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
 
 @media (max-width: 900px) {
   .w-grid { grid-template-columns: 1fr; }
-  .w-photo .stamp, .si-photo .stamp { left: 12px; right: auto; bottom: 12px; max-width: calc(100% - 24px); padding: 10px 14px; }
-  .w-photo .stamp svg, .si-photo .stamp svg { width: 30px; height: 30px; }
+  .w-photo .stamp, .si-photo .stamp, .about-photo .stamp { left: 12px; right: auto; bottom: 12px; max-width: calc(100% - 24px); padding: 10px 14px; }
+  .w-photo .stamp svg, .si-photo .stamp svg, .about-photo .stamp svg { width: 30px; height: 30px; }
   .w-photo img { object-position: 50% 62%; }
   .w-photo { aspect-ratio: 16 / 10; }
 }
@@ -885,32 +930,54 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
 }
 
 /* =========================================================
-   Cidades
+   Unidades e cidades: mapa + cards das unidades
    ========================================================= */
-.route {
-  position: relative; display: grid; grid-template-columns: repeat(6, 1fr);
-  padding: 40px 0 0; margin-top: 8px;
+.loc-chips { display: none; }
+.js .loc-chips {
+  display: flex; gap: 8px; margin-bottom: 14px;
+  overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none;
+  margin-inline: calc(var(--gutter) * -1); padding: 2px var(--gutter);
 }
-.route::before {
-  content: ""; position: absolute; left: 8%; right: 8%; top: 58px; height: 4px; border-radius: 4px;
-  background: repeating-linear-gradient(90deg, var(--line-strong) 0 16px, transparent 16px 26px);
+.loc-chips::-webkit-scrollbar { display: none; }
+.loc-chips button {
+  flex: none; min-height: 40px; padding: 0 16px; border: 0; border-radius: 999px;
+  background: var(--ice); box-shadow: inset 0 0 0 1.5px var(--line);
+  font-size: 14.5px; font-weight: 620; color: var(--duct); white-space: nowrap;
+  transition: background-color .2s ease, color .2s ease, box-shadow .2s ease;
 }
-.route-road { position: absolute; left: 8%; top: 22px; font-size: 13px; color: var(--muted); }
-.stop { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; text-decoration: none; color: var(--duct); padding: 0 6px 12px; }
-.stop .dot {
-  width: 40px; height: 40px; border-radius: 50%;
-  background: var(--ice); box-shadow: inset 0 0 0 2px var(--line-strong);
-  display: grid; place-items: center;
-  transition: transform .3s var(--ease-out), background-color .3s ease, box-shadow .3s ease;
+.loc-chips button:hover { box-shadow: inset 0 0 0 1.5px var(--line-strong); }
+.loc-chips button[aria-pressed="true"] { background: var(--duct); color: #fff; box-shadow: none; }
+.loc-grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 20px; align-items: start; }
+.loc-map-wrap { min-width: 0; }
+.loc-map {
+  display: none; position: relative; z-index: 0;
+  height: 480px; border-radius: var(--r-lg); overflow: hidden;
+  background: #E3ECF4; box-shadow: inset 0 0 0 1px var(--line);
 }
-.stop .dot::after { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--line-strong); transition: background-color .3s ease; }
-.stop b { margin-top: 12px; font-size: 16px; line-height: 1.2; font-weight: 700; }
-.stop small { margin-top: 4px; font-size: 13.5px; color: var(--muted); }
-a.stop:hover .dot { transform: translateY(-3px); box-shadow: inset 0 0 0 2px var(--blue); }
-a.stop:hover .dot::after { background: var(--blue); }
-.stop[aria-current="page"] .dot { background: var(--blue); box-shadow: 0 0 0 8px rgba(0, 80, 148, .12); }
-.stop[aria-current="page"] .dot::after { background: #fff; }
-.stop[aria-current="page"] b { color: var(--blue); }
+.js .loc-map { display: block; }
+.loc-wait { position: absolute; inset: 0; display: grid; place-items: center; font-size: 15px; color: var(--muted); }
+.loc-note { margin-top: 12px; font-size: 15px; line-height: 1.5; color: var(--muted); }
+.loc-note a { color: var(--blue); font-weight: 650; white-space: nowrap; }
+.units { display: grid; gap: 12px; }
+.unit { padding: 20px; border-radius: var(--r-lg); background: var(--ice); transition: box-shadow .3s ease; }
+.unit.is-current { order: -1; box-shadow: inset 0 0 0 2px var(--blue); }
+.u-head { display: flex; align-items: center; gap: 12px; }
+.u-ico { width: 42px; height: 42px; border-radius: 12px; background: #E1EEF9; color: var(--blue); display: grid; place-items: center; flex: none; transition: background-color .3s ease, color .3s ease; }
+.u-ico svg { width: 22px; height: 22px; }
+.unit.is-current .u-ico { background: var(--blue); color: #fff; }
+.u-head small { display: block; font-size: 13px; line-height: 1.2; color: var(--muted); }
+.u-head h3 { font-size: 20px; font-weight: 740; }
+.u-addr { margin-top: 12px; font-size: 15px; line-height: 1.45; color: #3D5069; }
+.u-rate { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 10px; font-size: 14px; color: var(--muted); text-decoration: none; }
+.u-rate:hover span:last-child { text-decoration: underline; text-underline-offset: 3px; }
+.u-rate .stars { display: flex; gap: 1px; color: #F5B400; }
+.u-rate .stars svg { width: 15px; height: 15px; }
+.u-rate b { font-weight: 750; color: var(--duct); }
+.u-serves { margin-top: 10px; font-size: 14px; line-height: 1.45; color: var(--muted); }
+.u-serves b { display: block; font-size: 15px; font-weight: 700; color: var(--duct); font-variant-numeric: tabular-nums; }
+.u-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.u-actions .btn { flex: 1 1 auto; }
+.u-actions .btn svg { width: 18px; height: 18px; }
 .branch {
   margin: 26px auto 0; width: fit-content;
   display: flex; align-items: center; gap: 12px;
@@ -918,29 +985,69 @@ a.stop:hover .dot::after { background: var(--blue); }
   box-shadow: inset 0 0 0 1.5px var(--line);
   font-size: 15px; color: var(--duct);
 }
-.branch svg { width: 22px; height: 22px; color: var(--blue); }
+.branch svg { width: 22px; height: 22px; color: var(--blue); flex: none; }
 
-.contacts { margin-top: clamp(40px, 6vw, 64px); display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-.contact {
-  display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 16px;
-  padding: 24px 26px; border-radius: 24px; background: var(--ice);
+/* Leaflet: fonte, cores e marcadores da marca */
+.loc-map .leaflet-container, .loc-map.leaflet-container { font-family: var(--font); background: #E3ECF4; }
+.loc-map .leaflet-tile-pane { filter: saturate(.5) brightness(1.03) contrast(.97); }
+.loc-map .leaflet-bar { border: 0; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-soft), 0 0 0 1px var(--line); }
+.loc-map .leaflet-bar a { color: var(--duct); }
+.loc-map .leaflet-control-attribution { font-size: 10.5px; background: rgba(255, 255, 255, .8); }
+.mk { background: none; border: 0; }
+.mk-unit {
+  position: absolute; left: 0; top: 0; width: 40px; height: 40px;
+  display: grid; place-items: center;
+  background: var(--blue); color: #fff;
+  border-radius: 50% 50% 50% 4px; transform: rotate(-45deg);
+  box-shadow: 0 0 0 3px #fff, 0 10px 18px -6px rgba(6, 43, 82, .6);
+  transition: background-color .3s ease;
 }
-.contact.is-current { box-shadow: inset 0 0 0 2px var(--blue); }
-.contact small { display: block; color: var(--muted); font-size: 14px; }
-.contact b { display: block; font-size: 24px; font-weight: 750; color: var(--duct); font-variant-numeric: tabular-nums; }
-.contact p { font-size: 14.5px; color: var(--muted); margin-top: 2px; }
+.mk-unit svg { width: 20px; height: 20px; transform: rotate(45deg); }
+.mk.is-on .mk-unit { background: var(--duct); }
+.leaflet-tooltip.mk-label {
+  padding: 3px 9px; border: 0; border-radius: 8px;
+  background: #fff; color: var(--duct);
+  box-shadow: 0 4px 12px -4px rgba(6, 43, 82, .4);
+  font: 650 12.5px/1.3 var(--font); white-space: nowrap;
+}
+.leaflet-tooltip.mk-label::before { display: none; }
+.leaflet-tooltip.mk-label.is-unit { background: var(--duct); color: #fff; }
+.leaflet-tooltip.mk-label.is-on { background: var(--blue); color: #fff; }
 
-@media (max-width: 860px) {
-  .route { grid-template-columns: 1fr; padding: 0 0 0 4px; }
-  .route::before { left: 23px; right: auto; top: 20px; bottom: 30px; width: 4px; height: auto; background: repeating-linear-gradient(180deg, var(--line-strong) 0 12px, transparent 12px 20px); }
-  .route-road { display: none; }
-  .stop { flex-direction: row; text-align: left; gap: 16px; padding: 8px 0; }
-  .stop b { margin-top: 0; }
-  .stop small { margin-top: 0; margin-left: auto; }
-  .stop .dot { flex: none; }
+@media (max-width: 900px) {
+  .loc-grid { grid-template-columns: 1fr; }
+  .loc-map { height: 360px; }
   .branch { margin-left: 0; }
-  .contacts { grid-template-columns: 1fr; }
-  .contact { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .loc-map { height: 320px; border-radius: 20px; }
+  .unit { padding: 18px; }
+  .branch { width: auto; border-radius: 18px; align-items: flex-start; font-size: 14.5px; }
+}
+
+/* =========================================================
+   Sobre a Zayin (página de serviços)
+   ========================================================= */
+.about-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(28px, 5vw, 72px); align-items: center; }
+.about-photo { position: relative; border-radius: var(--r-xl); overflow: hidden; aspect-ratio: 1 / 1; background: linear-gradient(160deg, #4BA3DD, #EAF3FB 70%); }
+.about-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 60%; }
+/* selo em cima: embaixo ele cobriria a picape */
+.about-photo .stamp { top: 20px; bottom: auto; }
+.about-stats { margin-top: 28px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.about-stats li { padding: 16px; border-radius: 18px; background: var(--ice); }
+.about-stats b { display: flex; align-items: center; gap: 4px; font-size: 26px; font-weight: 800; font-style: italic; line-height: 1.1; color: var(--duct); white-space: nowrap; }
+.about-stats b svg { width: 20px; height: 20px; color: #F5B400; }
+.about-stats span { display: block; margin-top: 4px; font-size: 14px; line-height: 1.35; color: var(--muted); }
+@media (max-width: 900px) {
+  .about-grid { grid-template-columns: 1fr; }
+  .about-photo { aspect-ratio: 4 / 3.4; }
+  .about-photo .stamp { top: 12px; }
+}
+@media (max-width: 560px) {
+  .about-stats { grid-template-columns: 1fr; gap: 8px; }
+  .about-stats li { display: flex; align-items: center; gap: 14px; padding: 14px 16px; }
+  .about-stats b { min-width: 96px; font-size: 24px; }
+  .about-stats span { margin-top: 0; }
 }
 
 /* =========================================================
@@ -1055,7 +1162,7 @@ a.stop:hover .dot::after { background: var(--blue); }
 }
 
 </style>
-<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "HVACBusiness", "name": "Zayin Ar Condicionado", "url": "https://zayinarcondicionado.com/jacarei/servicos/", "telephone": "+55 12 99201-9832", "description": "Instalação de ar-condicionado em Jacareí com 6 meses de garantia no serviço. Manutenção, higienização e infraestrutura para obra. Orçamento pelo WhatsApp.", "slogan": "Autorizado a venda, instalação com garantia.", "areaServed": ["Mogi das Cruzes", "Jacareí", "São José dos Campos", "Caçapava", "Taubaté", "Pindamonhangaba", "Litoral Norte"], "brand": [{"@type": "Brand", "name": "Samsung"}, {"@type": "Brand", "name": "LG"}, {"@type": "Brand", "name": "Midea"}, {"@type": "Brand", "name": "Elgin"}, {"@type": "Brand", "name": "Gree"}, {"@type": "Brand", "name": "Daikin"}], "sameAs": ["https://www.instagram.com/zayinarcondicionado/"], "hasOfferCatalog": {"@type": "OfferCatalog", "name": "Serviços de ar-condicionado", "itemListElement": [{"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Instalação de ar-condicionado"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Manutenção preventiva"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Higienização de ar-condicionado"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Infraestrutura para ar-condicionado em obra"}}]}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Início", "item": "https://zayinarcondicionado.com/jacarei/"}, {"@type": "ListItem", "position": 2, "name": "Serviços", "item": "https://zayinarcondicionado.com/jacarei/servicos/"}]}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "HVACBusiness", "name": "Zayin Ar Condicionado", "url": "https://zayinarcondicionado.com/jacarei/servicos/", "telephone": "+55 12 99201-9832", "description": "Instalação de ar-condicionado em Jacareí com 6 meses de garantia no serviço. Manutenção, higienização e infraestrutura para obra. Orçamento pelo WhatsApp.", "slogan": "Autorizado a venda, instalação com garantia.", "areaServed": ["Mogi das Cruzes", "Jacareí", "São José dos Campos", "Caçapava", "Taubaté", "Pindamonhangaba", "Litoral Norte"], "brand": [{"@type": "Brand", "name": "Samsung"}, {"@type": "Brand", "name": "LG"}, {"@type": "Brand", "name": "Midea"}, {"@type": "Brand", "name": "Elgin"}, {"@type": "Brand", "name": "Gree"}, {"@type": "Brand", "name": "Daikin"}], "sameAs": ["https://www.instagram.com/zayinarcondicionado/"], "department": [{"@type": "HVACBusiness", "name": "Zayin Ar Condicionado São José dos Campos", "telephone": "+55 12 99706-7659", "address": {"@type": "PostalAddress", "streetAddress": "R. Mario Campos", "addressLocality": "São José dos Campos", "addressRegion": "SP", "postalCode": "12221-750", "addressCountry": "BR"}, "geo": {"@type": "GeoCoordinates", "latitude": -23.1669442, "longitude": -45.8357906}, "hasMap": "https://www.google.com/maps/search/?api=1&query=Zayin+ar+condicionado+instala%C3%A7%C3%A3o+manuten%C3%A7%C3%A3o+venda+e+projetos&query_place_id=ChIJrbxfjAdLzJQRSSlSiRFEZSE"}, {"@type": "HVACBusiness", "name": "Zayin Ar Condicionado Jacareí", "telephone": "+55 12 99201-9832", "address": {"@type": "PostalAddress", "streetAddress": "R. Enéas de Mesquita, 145, sala 01 - Jardim Mesquita", "addressLocality": "Jacareí", "addressRegion": "SP", "postalCode": "12327-690", "addressCountry": "BR"}, "geo": {"@type": "GeoCoordinates", "latitude": -23.2998325, "longitude": -45.9664184}, "hasMap": "https://www.google.com/maps/search/?api=1&query=Zayin+Ar+Condicionado+Instala%C3%A7%C3%A3o+Venda+e+Projetos+%28Jacare%C3%AD%29&query_place_id=ChIJWQqN3DbLzZQRca5MLfaHHE8"}], "hasOfferCatalog": {"@type": "OfferCatalog", "name": "Serviços de ar-condicionado", "itemListElement": [{"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Instalação de ar-condicionado"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Manutenção preventiva"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Higienização de ar-condicionado"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Infraestrutura para ar-condicionado em obra"}}]}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Início", "item": "https://zayinarcondicionado.com/jacarei/"}, {"@type": "ListItem", "position": 2, "name": "Serviços", "item": "https://zayinarcondicionado.com/jacarei/servicos/"}]}]}</script>
 </head>
 <body class="page-servicos">
 <a class="skip" href="#conteudo">Pular para o conteúdo</a>
@@ -1083,6 +1190,10 @@ a.stop:hover .dot::after { background: var(--blue); }
   <symbol id="i-calc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M8.5 7.5h7M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h.01"/></symbol>
   <symbol id="i-ig" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="3.8"/><path d="M17 7h.01"/></symbol>
   <symbol id="i-road" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 9 4M20 20 15 4M12 5v2M12 11v2M12 17v2"/></symbol>
+  <symbol id="i-route" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-8-8 18-2-8-8-2Z"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 2.8 2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3-4.6-4.4 6.3-.9L12 2.8Z" fill="currentColor"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6.5" y="5" width="3.6" height="14" rx="1.2"/><rect x="13.9" y="5" width="3.6" height="14" rx="1.2"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.6v12.8c0 .8.9 1.3 1.6.9l10-6.4a1.1 1.1 0 0 0 0-1.8l-10-6.4c-.7-.4-1.6.1-1.6.9Z"/></symbol>
   <symbol id="t-hiwall" viewBox="0 0 34 22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1.5" y="4" width="31" height="12" rx="4"/><path d="M5 12.5h24"/><path d="M8 19.5c0-1 1-1 1-2M17 19.5c0-1 1-1 1-2M26 19.5c0-1 1-1 1-2" opacity=".6"/></symbol>
   <symbol id="t-pisoteto" viewBox="0 0 34 22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1.5" y="2" width="31" height="16" rx="3"/><path d="M4.5 11.5h25M4.5 14.5h25"/><path d="M1.5 6.5h31" opacity=".5"/></symbol>
   <symbol id="t-cassete" viewBox="0 0 34 22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="7" y="1" width="20" height="20" rx="3"/><rect x="12.5" y="6.5" width="9" height="9" rx="1.5"/><path d="M10 4h14M10 18h14"/></symbol>
@@ -1140,9 +1251,10 @@ a.stop:hover .dot::after { background: var(--blue); }
   <a class="dl" href="../../jacarei/#aparelhos">Aparelhos</a>
   <a class="dl" href="#instalacao">Instalação</a>
   <a class="dl" href="#outros-servicos">Outros serviços</a>
+  <a class="dl" href="#sobre">Sobre a Zayin</a>
   <a class="dl" href="#orcamento">Montar pedido</a>
   <a class="dl" href="#garantia">Garantia</a>
-  <a class="dl" href="#cidades">Cidades</a>
+  <a class="dl" href="#cidades">Unidades e mapa</a>
   <a class="dl" href="#duvidas">Dúvidas</a>
   <a class="btn btn-wa btn-block" data-wa="Olá, vim do seu site e quero fazer um orçamento. Estou em Jacareí." href="#">
     <svg aria-hidden="true"><use href="#i-wa"/></svg>Chamar no WhatsApp
@@ -1181,7 +1293,7 @@ a.stop:hover .dot::after { background: var(--blue); }
       </ul>
     </div>
     <figure class="svc-hero-photo" data-in style="--d:.2s;margin:0">
-      <img src="https://images.pexels.com/photos/5463575/pexels-photo-5463575.jpeg?auto=compress&cs=tinysrgb&w=1100" srcset="https://images.pexels.com/photos/5463575/pexels-photo-5463575.jpeg?auto=compress&cs=tinysrgb&w=700 700w, https://images.pexels.com/photos/5463575/pexels-photo-5463575.jpeg?auto=compress&cs=tinysrgb&w=1200 1200w" sizes="(max-width: 900px) 92vw, 580px" alt="Técnico medindo a pressão do sistema ao lado da condensadora de ar-condicionado" width="1100" height="781" fetchpriority="high">
+      <img src="../../img/fotos/tecnico-condensadora-1200.webp" srcset="../../img/fotos/tecnico-condensadora-700.webp 700w, ../../img/fotos/tecnico-condensadora-1200.webp 1200w" sizes="(max-width: 900px) 92vw, 580px" alt="Técnico da Zayin fazendo a ligação da condensadora na sacada de um apartamento, com o manifold de pressão ao lado" width="1200" height="1200" fetchpriority="high">
       <figcaption class="hm-badge">
         <span class="ico"><svg aria-hidden="true"><use href="#i-shield"/></svg></span>
         <div><b>6 meses de garantia</b><small>no serviço de instalação</small></div>
@@ -1251,8 +1363,36 @@ a.stop:hover .dot::after { background: var(--blue); }
         <h3>Infraestrutura para obra</h3>
         <p>Tubulação e dreno embutidos durante a obra ou reforma, deixando tudo pronto para instalar depois.</p>
         <a class="more" data-wa="Olá, vim do seu site e quero falar sobre infraestrutura de ar-condicionado para minha obra. Estou em Jacareí." href="#">Falar sobre minha obra</a>
-        <div class="svc-thumb"><img src="https://images.pexels.com/photos/11270563/pexels-photo-11270563.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Tubos de cobre usados na infraestrutura de ar-condicionado" loading="lazy" width="800" height="450"></div>
+        <div class="svc-thumb"><img src="../../img/fotos/infraestrutura-obra-1000.webp" srcset="../../img/fotos/infraestrutura-obra-600.webp 600w, ../../img/fotos/infraestrutura-obra-1000.webp 1000w" sizes="(max-width: 900px) 92vw, 380px" alt="Técnico da Zayin passando a tubulação do ar-condicionado pela estrutura de uma obra" loading="lazy" width="1000" height="563"></div>
       </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SOBRE A ZAYIN ============ -->
+<section class="section about" id="sobre" style="padding-top:0">
+  <div class="wrap about-grid">
+    <figure class="about-photo" data-reveal="clip" style="margin:0">
+      <img src="../../img/fotos/unidade-jacarei-1100.webp" srcset="../../img/fotos/unidade-jacarei-700.webp 700w, ../../img/fotos/unidade-jacarei-1100.webp 1100w" sizes="(max-width: 900px) 92vw, 540px" alt="Picape e equipe da Zayin em frente ao Espaço Ventura, onde fica a unidade de Jacareí" loading="lazy" width="1100" height="1143">
+      <figcaption class="stamp">
+        <svg aria-hidden="true"><use href="#i-pin"/></svg>
+        <div><b>Unidade Jacareí</b><span>Espaço Ventura, Jardim Mesquita</span></div>
+      </figcaption>
+    </figure>
+    <div>
+      <div data-reveal>
+        <p class="eyebrow">Sobre a Zayin</p>
+        <h2 class="h-section">Quem vende é quem instala</h2>
+        <p class="lede">A Zayin é revenda autorizada das marcas líderes e tem equipe técnica para instalar, fazer a manutenção e higienizar o seu ar-condicionado. São duas unidades, em São José dos Campos e em Jacareí, com atendimento no Vale do Paraíba, em Mogi das Cruzes e no Litoral Norte.</p>
+      </div>
+      <ul class="about-stats" data-reveal style="--d:.1s">
+        <li><b>5,0<svg aria-hidden="true"><use href="#i-star"/></svg></b><span>nota no Google, com 61 avaliações</span></li>
+        <li><b>2</b><span>unidades, em São José dos Campos e Jacareí</span></li>
+        <li><b>6 meses</b><span>de garantia no serviço de instalação</span></li>
+      </ul>
+      <div class="hero-ctas" data-reveal style="--d:.2s">
+        <a class="btn btn-ghost" href="#cidades"><svg aria-hidden="true"><use href="#i-pin"/></svg>Ver unidades no mapa</a>
+      </div>
     </div>
   </div>
 </section>
@@ -1398,36 +1538,66 @@ a.stop:hover .dot::after { background: var(--blue); }
 </section>
 
 
-<!-- ============ CIDADES ============ -->
+<!-- ============ UNIDADES E CIDADES (mapa) ============ -->
 <section class="section" id="cidades">
   <div class="wrap">
     <div class="section-head split" data-reveal>
       <div>
-        <p class="eyebrow">Onde atendemos</p>
-        <h2 class="h-section">Atendemos o Vale do Paraíba, Mogi e o litoral</h2>
+        <p class="eyebrow">Onde estamos</p>
+        <h2 class="h-section">Unidades no Vale do Paraíba, atendimento até o litoral</h2>
       </div>
-      <p class="lede">Escolha sua cidade para ver a página com o contato certo.</p>
+      <p class="lede">A Zayin tem unidades em São José dos Campos e em Jacareí e atende também Taubaté, Pindamonhangaba, Caçapava, Mogi das Cruzes e o Litoral Norte.</p>
     </div>
-    <nav class="route" aria-label="Cidades atendidas" data-reveal>
-      <span class="route-road">Ao longo da Via Dutra, de Mogi a Pinda</span>
-      <a class="stop" href="../../mogidascruzes/servicos/"><span class="dot"></span><b>Mogi das Cruzes</b><small>Ver página</small></a>
-      <span class="stop" aria-current="page"><span class="dot"></span><b>Jacareí</b><small>Você está aqui</small></span>
-      <a class="stop" href="../../saojosedoscampos/servicos/"><span class="dot"></span><b>São José dos Campos</b><small>Ver página</small></a>
-      <a class="stop" href="../../cacapava/servicos/"><span class="dot"></span><b>Caçapava</b><small>Ver página</small></a>
-      <a class="stop" href="../../taubate/servicos/"><span class="dot"></span><b>Taubaté</b><small>Ver página</small></a>
-      <a class="stop" href="../../pindamonhangaba/servicos/"><span class="dot"></span><b>Pindamonhangaba</b><small>Ver página</small></a>
-    </nav>
+    <div class="locator" data-reveal>
+      <div class="loc-chips" role="group" aria-label="Ver no mapa">
+        <button type="button" data-loc="all" aria-pressed="false">Todas as unidades</button>
+        <button type="button" data-loc="saojosedoscampos" aria-pressed="false">São José dos Campos</button>
+        <button type="button" data-loc="jacarei" aria-pressed="true">Jacareí</button>
+        <button type="button" data-loc="taubate" aria-pressed="false">Taubaté</button>
+        <button type="button" data-loc="pindamonhangaba" aria-pressed="false">Pindamonhangaba</button>
+        <button type="button" data-loc="mogidascruzes" aria-pressed="false">Mogi das Cruzes</button>
+        <button type="button" data-loc="cacapava" aria-pressed="false">Caçapava</button>
+      </div>
+      <div class="loc-grid">
+        <div class="loc-map-wrap">
+          <div class="loc-map" id="mapa" role="region" aria-label="Mapa das unidades da Zayin"><p class="loc-wait">Carregando o mapa…</p></div>
+          <p class="loc-note" id="locNote" aria-live="polite">Unidade Zayin em Jacareí. Endereço, rota e WhatsApp no card da unidade.</p>
+        </div>
+        <div class="units">
+        <article class="unit is-current" data-unit="jacarei">
+          <div class="u-head">
+            <span class="u-ico"><svg aria-hidden="true"><use href="#i-pin"/></svg></span>
+            <div><small>Unidade</small><h3>Jacareí</h3></div>
+          </div>
+          <p class="u-addr">Espaço Ventura, R. Enéas de Mesquita, 145, sala 01, Jardim Mesquita, Jacareí - SP, 12327-690</p>
+          <a class="u-rate" href="https://www.google.com/maps/search/?api=1&amp;query=Zayin+Ar+Condicionado+Instala%C3%A7%C3%A3o+Venda+e+Projetos+%28Jacare%C3%AD%29&amp;query_place_id=ChIJWQqN3DbLzZQRca5MLfaHHE8" target="_blank" rel="noopener">
+            <span class="stars"><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg></span><b>5,0</b><span>7 avaliações no Google</span>
+          </a>
+          <p class="u-serves"><b>WhatsApp (12) 99201-9832</b>Atende Jacareí</p>
+          <div class="u-actions">
+            <a class="btn btn-wa btn-sm" data-wa="Olá, vim do seu site e quero fazer um orçamento. Estou em Jacareí." data-wa-phone="5512992019832" href="#"><svg aria-hidden="true"><use href="#i-wa"/></svg>WhatsApp</a>
+            <a class="btn btn-ghost btn-sm" href="https://www.google.com/maps/dir/?api=1&amp;destination=Zayin+Ar+Condicionado+Instala%C3%A7%C3%A3o+Venda+e+Projetos+%28Jacare%C3%AD%29&amp;destination_place_id=ChIJWQqN3DbLzZQRca5MLfaHHE8" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-route"/></svg>Como chegar</a>
+          </div>
+        </article>
+        <article class="unit" data-unit="saojosedoscampos">
+          <div class="u-head">
+            <span class="u-ico"><svg aria-hidden="true"><use href="#i-pin"/></svg></span>
+            <div><small>Unidade</small><h3>São José dos Campos</h3></div>
+          </div>
+          <p class="u-addr">R. Mario Campos, São José dos Campos - SP, 12221-750</p>
+          <a class="u-rate" href="https://www.google.com/maps/search/?api=1&amp;query=Zayin+ar+condicionado+instala%C3%A7%C3%A3o+manuten%C3%A7%C3%A3o+venda+e+projetos&amp;query_place_id=ChIJrbxfjAdLzJQRSSlSiRFEZSE" target="_blank" rel="noopener">
+            <span class="stars"><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg></span><b>5,0</b><span>54 avaliações no Google</span>
+          </a>
+          <p class="u-serves"><b>WhatsApp (12) 99706-7659</b>Atende São José dos Campos, Caçapava, Taubaté, Pindamonhangaba, Mogi das Cruzes e Litoral Norte</p>
+          <div class="u-actions">
+            <a class="btn btn-wa btn-sm" data-wa="Olá, vim do seu site e quero fazer um orçamento." data-wa-phone="5512997067659" href="#"><svg aria-hidden="true"><use href="#i-wa"/></svg>WhatsApp</a>
+            <a class="btn btn-ghost btn-sm" href="https://www.google.com/maps/dir/?api=1&amp;destination=Zayin+ar+condicionado+instala%C3%A7%C3%A3o+manuten%C3%A7%C3%A3o+venda+e+projetos&amp;destination_place_id=ChIJrbxfjAdLzJQRSSlSiRFEZSE" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-route"/></svg>Como chegar</a>
+          </div>
+        </article>
+        </div>
+      </div>
+    </div>
     <p class="branch" data-reveal><svg aria-hidden="true"><use href="#i-road"/></svg>Litoral Norte também é atendido. Fale com a gente pelo WhatsApp.</p>
-    <div class="contacts">
-      <div class="contact is-current" data-reveal style="--d:0.0s">
-        <div><small>WhatsApp</small><b>(12) 99201-9832</b><p>Jacareí</p></div>
-        <a class="btn btn-wa btn-sm" data-wa="Olá, vim do seu site e quero fazer um orçamento. Estou em Jacareí." data-wa-phone="5512992019832" href="#"><svg aria-hidden="true"><use href="#i-wa"/></svg>Chamar</a>
-      </div>
-      <div class="contact" data-reveal style="--d:0.1s">
-        <div><small>WhatsApp</small><b>(12) 99706-7659</b><p>São José dos Campos, Caçapava, Taubaté, Pindamonhangaba, Mogi das Cruzes e Litoral Norte</p></div>
-        <a class="btn btn-wa btn-sm" data-wa="Olá, vim do seu site e quero fazer um orçamento." data-wa-phone="5512997067659" href="#"><svg aria-hidden="true"><use href="#i-wa"/></svg>Chamar</a>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -1450,6 +1620,7 @@ a.stop:hover .dot::after { background: var(--blue); }
       <details><summary>Vocês atendem empresas e comércios?<span class="pm"><svg aria-hidden="true"><use href="#i-plus"/></svg></span></summary><div class="ans"><p>Sim. Instalamos e fazemos manutenção em aparelhos hi-wall, piso teto e cassete para lojas, escritórios, clínicas e outros espaços comerciais.</p></div></details>
       <details><summary>Qual capacidade de BTUs eu preciso?<span class="pm"><svg aria-hidden="true"><use href="#i-plus"/></svg></span></summary><div class="ans"><p>Use a calculadora na seção de aparelhos para ter uma estimativa pelo tamanho do ambiente. A equipe confirma a capacidade certa no orçamento.</p></div></details>
       <details><summary>Quais cidades vocês atendem?<span class="pm"><svg aria-hidden="true"><use href="#i-plus"/></svg></span></summary><div class="ans"><p>São José dos Campos, Jacareí, Taubaté, Pindamonhangaba, Caçapava, Mogi das Cruzes e o Litoral Norte.</p></div></details>
+      <details><summary>Onde ficam as unidades da Zayin?<span class="pm"><svg aria-hidden="true"><use href="#i-plus"/></svg></span></summary><div class="ans"><p>São José dos Campos: R. Mario Campos, São José dos Campos - SP, 12221-750.</p><p>Jacareí: Espaço Ventura, R. Enéas de Mesquita, 145, sala 01, Jardim Mesquita, Jacareí - SP, 12327-690.</p></div></details>
     </div>
   </div>
 </section>
@@ -1524,7 +1695,7 @@ a.stop:hover .dot::after { background: var(--blue); }
   <a class="btn btn-wa" data-wa="Olá, vim do seu site e quero fazer um orçamento. Estou em Jacareí." href="#"><svg aria-hidden="true"><use href="#i-wa"/></svg>Orçamento</a>
 </div>
 
-<script>window.ZAYIN = {"kind": "servicos", "city": {"slug": "jacarei", "name": "Jacareí", "phone": "5512992019832", "phoneLabel": "(12) 99201-9832"}, "cities": [{"slug": "mogidascruzes", "name": "Mogi das Cruzes", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659"}, {"slug": "jacarei", "name": "Jacareí", "phone": "5512992019832", "phoneLabel": "(12) 99201-9832"}, {"slug": "saojosedoscampos", "name": "São José dos Campos", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659"}, {"slug": "cacapava", "name": "Caçapava", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659"}, {"slug": "taubate", "name": "Taubaté", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659"}, {"slug": "pindamonhangaba", "name": "Pindamonhangaba", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659"}], "brands": [{"slug": "samsung", "name": "Samsung", "ratio": 6.543}, {"slug": "lg", "name": "LG", "ratio": 2.268}, {"slug": "midea", "name": "Midea", "ratio": 2.492}, {"slug": "elgin", "name": "Elgin", "ratio": 2.403}, {"slug": "gree", "name": "Gree", "ratio": 5.121}, {"slug": "daikin", "name": "Daikin", "ratio": 4.638}], "imgBase": "../../img/produtos/", "defaultPhone": "5512997067659", "defaultPhoneLabel": "(12) 99706-7659"};</script>
+<script>window.ZAYIN = {"kind": "servicos", "city": {"slug": "jacarei", "name": "Jacareí", "phone": "5512992019832", "phoneLabel": "(12) 99201-9832"}, "cities": [{"slug": "mogidascruzes", "name": "Mogi das Cruzes", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659", "short": "Mogi", "lat": -23.5227, "lng": -46.1883, "unit": "saojosedoscampos", "href": "../../mogidascruzes/servicos/"}, {"slug": "jacarei", "name": "Jacareí", "phone": "5512992019832", "phoneLabel": "(12) 99201-9832", "short": "Jacareí", "lat": -23.3053, "lng": -45.9658, "unit": "jacarei", "href": "../../jacarei/servicos/"}, {"slug": "saojosedoscampos", "name": "São José dos Campos", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659", "short": "SJC", "lat": -23.1896, "lng": -45.8841, "unit": "saojosedoscampos", "href": "../../saojosedoscampos/servicos/"}, {"slug": "cacapava", "name": "Caçapava", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659", "short": "Caçapava", "lat": -23.1017, "lng": -45.7069, "unit": "saojosedoscampos", "href": "../../cacapava/servicos/"}, {"slug": "taubate", "name": "Taubaté", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659", "short": "Taubaté", "lat": -23.0264, "lng": -45.5553, "unit": "saojosedoscampos", "href": "../../taubate/servicos/"}, {"slug": "pindamonhangaba", "name": "Pindamonhangaba", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659", "short": "Pinda", "lat": -22.9246, "lng": -45.4613, "unit": "saojosedoscampos", "href": "../../pindamonhangaba/servicos/"}], "units": [{"slug": "saojosedoscampos", "name": "São José dos Campos", "short": "SJC", "tip": "top", "lat": -23.1669442, "lng": -45.8357906}, {"slug": "jacarei", "name": "Jacareí", "short": "Jacareí", "tip": "left", "lat": -23.2998325, "lng": -45.9664184}], "litoral": {"name": "Litoral Norte", "lat": -23.6203, "lng": -45.4131}, "locNotes": {"all": "Duas unidades da Zayin, em São José dos Campos e em Jacareí. Escolha uma cidade para ver no mapa.", "mogidascruzes": "Em Mogi das Cruzes, a equipe da Zayin vai até você. O atendimento é pela unidade de São José dos Campos.", "jacarei": "Unidade Zayin em Jacareí. Endereço, rota e WhatsApp no card da unidade.", "saojosedoscampos": "Unidade Zayin em São José dos Campos. Endereço, rota e WhatsApp no card da unidade.", "cacapava": "Em Caçapava, a equipe da Zayin vai até você. O atendimento é pela unidade de São José dos Campos.", "taubate": "Em Taubaté, a equipe da Zayin vai até você. O atendimento é pela unidade de São José dos Campos.", "pindamonhangaba": "Em Pindamonhangaba, a equipe da Zayin vai até você. O atendimento é pela unidade de São José dos Campos."}, "brands": [{"slug": "samsung", "name": "Samsung", "ratio": 6.543}, {"slug": "lg", "name": "LG", "ratio": 2.268}, {"slug": "midea", "name": "Midea", "ratio": 2.492}, {"slug": "elgin", "name": "Elgin", "ratio": 2.403}, {"slug": "gree", "name": "Gree", "ratio": 5.121}, {"slug": "daikin", "name": "Daikin", "ratio": 4.638}], "imgBase": "../../img/produtos/", "defaultPhone": "5512997067659", "defaultPhoneLabel": "(12) 99706-7659"};</script>
 <script>
 (() => {
   'use strict';
@@ -1684,18 +1855,60 @@ a.stop:hover .dot::after { background: var(--blue); }
     Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 900))]).then(start);
   } else start();
 
-  // vídeo de fundo: o aparelho "liga" uma vez e fica parado no último quadro;
-  // volta a tocar quando a pessoa sobe de novo até o topo
+  const playSafe = v => { const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); };
+  // botão de pausar/tocar dos vídeos em loop; onUser avisa quando a pessoa pausou de propósito
+  const bindToggle = (v, btn, onUser) => {
+    const sync = () => {
+      const on = !v.paused;
+      btn.setAttribute('aria-label', on ? 'Pausar vídeo' : 'Tocar vídeo');
+      btn.querySelector('use').setAttribute('href', on ? '#i-pause' : '#i-play');
+    };
+    v.addEventListener('play', sync);
+    v.addEventListener('pause', sync);
+    btn.addEventListener('click', () => {
+      const pause = !v.paused;
+      onUser(pause);
+      if (pause) v.pause(); else playSafe(v);
+    });
+    btn.hidden = false;
+    sync();
+  };
+
+  // vídeo de fundo. Computador: o aparelho "liga" uma vez e fica parado no último quadro,
+  // voltando a tocar quando a pessoa sobe até o topo. Celular: showroom das marcas em loop.
   const hv = $('.hv-video');
   if (hv && !reduce) {
-    let ended = false;
-    const play = () => { const pr = hv.play(); if (pr && pr.catch) pr.catch(() => {}); };
+    const small = matchMedia('(max-width: 900px)').matches;
+    const src = (small && hv.dataset.srcSm) || hv.dataset.src;
+    hv.loop = small;
+    let ended = false, started = false, userPaused = false;
+    hv.addEventListener('playing', () => hv.classList.add('is-on'), { once: true });
     hv.addEventListener('ended', () => { ended = true; });
-    const begin = () => { hv.preload = 'auto'; play(); };
+    const begin = () => { started = true; hv.src = src; hv.preload = 'auto'; playSafe(hv); };
     if (document.readyState === 'complete') begin(); else addEventListener('load', begin, { once: true });
     new IntersectionObserver(([en]) => {
-      if (en.isIntersecting && ended) { ended = false; hv.currentTime = 0; play(); }
-    }, { threshold: 0.5 }).observe(hv);
+      if (!started) return;
+      const visible = en.intersectionRatio >= 0.5;
+      if (hv.loop) {
+        // fora da tela o loop para, para não gastar bateria
+        if (!visible) hv.pause(); else if (!userPaused) playSafe(hv);
+      } else if (visible && ended) { ended = false; hv.currentTime = 0; playSafe(hv); }
+    }, { threshold: [0, 0.5] }).observe(hv);
+    const hvBtn = $('.hv-toggle');
+    if (hvBtn && hv.loop) bindToggle(hv, hvBtn, p => { userPaused = p; });
+  }
+
+  // vídeo da Zayin na seção de instalação: carrega perto da tela e toca só enquanto aparece
+  const reel = $('.reel');
+  if (reel) {
+    let loaded = false;
+    let userPaused = reduce;                      // com movimento reduzido, só toca se a pessoa pedir
+    const load = () => { if (!loaded) { loaded = true; reel.src = reel.dataset.src; } };
+    new IntersectionObserver(([en]) => {
+      if (en.isIntersecting) load();
+      if (en.intersectionRatio >= 0.35) { if (!userPaused) playSafe(reel); } else reel.pause();
+    }, { threshold: [0, 0.35], rootMargin: '200px 0px' }).observe(reel);
+    bindToggle(reel, reel.parentElement.querySelector('.vid-toggle'), p => { userPaused = p; if (!p) load(); });
   }
 
   /* botões magnéticos (só mouse) */
@@ -2026,6 +2239,135 @@ a.stop:hover .dot::after { background: var(--blue); }
       perkDots.forEach((d, k) => d.classList.toggle('is-on', k === i));
     };
     perkGrid.addEventListener('scroll', () => requestAnimationFrame(syncDots), { passive: true });
+  }
+
+  /* ---------------------------------------------------------
+     Mapa das unidades. Sem cidade na página mostra todas; com cidade, mostra a de lá.
+     Leaflet + OpenStreetMap, carregados só quando a seção chega perto da tela.
+     --------------------------------------------------------- */
+  const mapEl = $('#mapa');
+  if (mapEl) {
+    const UNITS = Z.units || [];
+    const NOTES = Z.locNotes || {};
+    const byCity = Object.fromEntries(CITIES.map(c => [c.slug, c]));
+    const byUnit = Object.fromEntries(UNITS.map(u => [u.slug, u]));
+    const note = $('#locNote');
+    const chips = $$('.loc-chips button');
+    const cards = $$('.unit');
+    const layers = {};                                 // slug -> { ll, setOn }
+    let map = null;
+    let current = (CITY && CITY.slug) || 'all';
+    const pageHref = h => (location.protocol === 'file:' ? h.replace(/\/$/, '/index.html') : h);
+
+    const applyView = animate => {
+      if (!map) return;
+      const city = byCity[current];
+      const fly = animate && !reduce;
+      if (city && byUnit[current]) {
+        const ll = layers[current].ll;
+        if (fly) map.flyTo(ll, 13, { duration: 0.9 }); else map.setView(ll, 13);
+        return;
+      }
+      // todas as unidades, ou a cidade junto com a unidade que atende lá.
+      // Margem maior em cima (rótulo das unidades) e à direita (nome das cidades)
+      const pts = city ? [layers[current].ll, layers[city.unit].ll] : Object.values(layers).map(l => l.ll);
+      const opts = { paddingTopLeft: [70, 70], paddingBottomRight: [80, 40], maxZoom: 12 };
+      if (fly) map.flyToBounds(pts, { ...opts, duration: 0.9 }); else map.fitBounds(pts, opts);
+    };
+
+    const select = (slug, animate) => {
+      current = slug;
+      const city = byCity[slug];
+      const unitSlug = city ? city.unit : null;
+      chips.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.loc === slug)));
+      cards.forEach(c => c.classList.toggle('is-current', c.dataset.unit === unitSlug));
+      note.textContent = NOTES[slug] || NOTES.all || '';
+      if (city && !(CITY && CITY.slug === slug)) {
+        const a = document.createElement('a');
+        a.href = pageHref(city.href);
+        a.textContent = `Ver a página de ${city.name}`;
+        note.append(' ', a);
+      }
+      Object.entries(layers).forEach(([k, l]) => l.setOn(k === slug || k === unitSlug));
+      applyView(animate);
+    };
+    chips.forEach(b => b.addEventListener('click', () => select(b.dataset.loc, true)));
+
+    const initMap = L => {
+      mapEl.textContent = '';
+      map = L.map(mapEl, {
+        center: [-23.2, -45.9], zoom: 9,                  // já com posição, para os marcadores existirem ao ser criados
+        scrollWheelZoom: false,
+        dragging: !matchMedia('(pointer: coarse)').matches,  // no celular um dedo rola a página; dois dedos dão zoom
+        zoomSnap: 0.25,
+      });
+      map.attributionControl.setPrefix(false);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',
+      }).addTo(map);
+
+      UNITS.forEach(u => {
+        const left = u.tip === 'left';
+        const icon = L.divIcon({
+          className: 'mk', html: '<span class="mk-unit"><svg aria-hidden="true"><use href="#i-snow"/></svg></span>',
+          iconSize: [40, 40], iconAnchor: [20, 46], tooltipAnchor: left ? [-24, -26] : [0, -50],
+        });
+        const m = L.marker([u.lat, u.lng], { icon, title: `Unidade Zayin ${u.name}`, riseOnHover: true }).addTo(map);
+        m.bindTooltip(`Zayin ${u.short}`, { permanent: true, direction: left ? 'left' : 'top', className: 'mk-label is-unit' });
+        m.on('click', () => select(u.slug, true));
+        layers[u.slug] = {
+          ll: [u.lat, u.lng],
+          setOn: on => {
+            m.getElement().classList.toggle('is-on', on);
+            m.getTooltip().getElement().classList.toggle('is-on', on);
+          },
+        };
+      });
+      const dot = (lat, lng, name, style, side = 'right') => {
+        const m = L.circleMarker([lat, lng], { radius: 7, weight: 2.5, color: '#005094', fillColor: '#fff', fillOpacity: 1, ...style }).addTo(map);
+        m.bindTooltip(name, { permanent: true, direction: side, offset: [side === 'left' ? -8 : 8, 0], className: 'mk-label' });
+        return m;
+      };
+      CITIES.filter(c => !byUnit[c.slug]).forEach(c => {
+        const m = dot(c.lat, c.lng, c.short);
+        m.on('click', () => select(c.slug, true));
+        layers[c.slug] = {
+          ll: [c.lat, c.lng],
+          setOn: on => {
+            m.setStyle({ fillColor: on ? '#005094' : '#fff' });
+            m.setRadius(on ? 9 : 7);
+            m.getTooltip().getElement().classList.toggle('is-on', on);
+          },
+        };
+      });
+      // litoral: atendido, sem página própria; entra na vista geral
+      if (Z.litoral) {
+        dot(Z.litoral.lat, Z.litoral.lng, Z.litoral.name, { color: '#506279', weight: 2, dashArray: '3 3' }, 'left');
+        layers.litoral = { ll: [Z.litoral.lat, Z.litoral.lng], setOn: () => {} };
+      }
+      select(current, false);
+    };
+
+    const LEAFLET = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/';
+    const addTag = (tag, attrs) => new Promise((res, rej) => {
+      const el = Object.assign(document.createElement(tag), attrs, { crossOrigin: 'anonymous', referrerPolicy: 'no-referrer', onload: res, onerror: rej });
+      document.head.appendChild(el);
+    });
+    const loadLeaflet = () => Promise.all([
+      addTag('link', { rel: 'stylesheet', href: `${LEAFLET}leaflet.min.css`, integrity: 'sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw==' }),
+      addTag('script', { src: `${LEAFLET}leaflet.min.js`, integrity: 'sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g==' }),
+    ]).then(() => window.L);
+
+    select(current, false);
+    const mapIO = new IntersectionObserver(([en]) => {
+      if (!en.isIntersecting) return;
+      mapIO.disconnect();
+      loadLeaflet().then(initMap).catch(() => {
+        mapEl.innerHTML = '<p class="loc-wait">Não foi possível carregar o mapa. Os endereços e as rotas estão nos cards das unidades.</p>';
+      });
+    }, { rootMargin: '400px 0px' });
+    mapIO.observe(mapEl);
   }
 
   /* ano no rodapé */

@@ -12,6 +12,7 @@ import math
 import re
 import shutil
 from pathlib import Path
+from urllib.parse import quote_plus
 
 ROOT = Path(__file__).parent
 SRC = ROOT / "src"
@@ -21,16 +22,44 @@ DOMAIN = "https://zayinarcondicionado.com"
 SJC_PHONE = ("5512997067659", "(12) 99706-7659")
 JAC_PHONE = ("5512992019832", "(12) 99201-9832")
 
-# ordem geográfica (oeste -> leste, pela Dutra)
+# ordem geográfica (oeste -> leste, pela Dutra); lat/lng = centro da cidade, para o mapa
 CITIES = [
-    {"slug": "mogidascruzes", "name": "Mogi das Cruzes", "short": "Mogi", "phone": SJC_PHONE},
-    {"slug": "jacarei", "name": "Jacareí", "phone": JAC_PHONE},
-    {"slug": "saojosedoscampos", "name": "São José dos Campos", "short": "SJC", "phone": SJC_PHONE},
-    {"slug": "cacapava", "name": "Caçapava", "phone": SJC_PHONE},
-    {"slug": "taubate", "name": "Taubaté", "phone": SJC_PHONE},
-    {"slug": "pindamonhangaba", "name": "Pindamonhangaba", "short": "Pinda", "phone": SJC_PHONE},
+    {"slug": "mogidascruzes", "name": "Mogi das Cruzes", "short": "Mogi", "phone": SJC_PHONE, "lat": -23.5227, "lng": -46.1883},
+    {"slug": "jacarei", "name": "Jacareí", "phone": JAC_PHONE, "lat": -23.3053, "lng": -45.9658},
+    {"slug": "saojosedoscampos", "name": "São José dos Campos", "short": "SJC", "phone": SJC_PHONE, "lat": -23.1896, "lng": -45.8841},
+    {"slug": "cacapava", "name": "Caçapava", "phone": SJC_PHONE, "lat": -23.1017, "lng": -45.7069},
+    {"slug": "taubate", "name": "Taubaté", "phone": SJC_PHONE, "lat": -23.0264, "lng": -45.5553},
+    {"slug": "pindamonhangaba", "name": "Pindamonhangaba", "short": "Pinda", "phone": SJC_PHONE, "lat": -22.9246, "lng": -45.4613},
 ]
 BUILDER_ORDER = ["saojosedoscampos", "jacarei", "taubate", "pindamonhangaba", "mogidascruzes", "cacapava"]
+LITORAL = {"name": "Litoral Norte", "lat": -23.6203, "lng": -45.4131}  # ponto no mapa em Caraguatatuba
+
+# unidades com perfil no Google (Perfil da Empresa / Google Meu Negócio).
+# tip = lado do rótulo no mapa, para os dois não se encostarem na vista geral.
+# Nota e número de avaliações conferidos em 22/09/2026: atualize aqui quando mudarem.
+UNITS = [
+    {"slug": "saojosedoscampos", "name": "São José dos Campos", "short": "SJC", "tip": "top", "phone": SJC_PHONE,
+     "gname": "Zayin ar condicionado instalação manutenção venda e projetos",
+     "addr": "R. Mario Campos, São José dos Campos - SP, 12221-750",
+     "street": "R. Mario Campos", "locality": "São José dos Campos", "postal": "12221-750",
+     "lat": -23.1669442, "lng": -45.8357906, "place_id": "ChIJrbxfjAdLzJQRSSlSiRFEZSE",
+     "rating": 5.0, "reviews": 54,
+     "serves": "São José dos Campos, Caçapava, Taubaté, Pindamonhangaba, Mogi das Cruzes e Litoral Norte"},
+    {"slug": "jacarei", "name": "Jacareí", "short": "Jacareí", "tip": "left", "phone": JAC_PHONE,
+     "gname": "Zayin Ar Condicionado Instalação Venda e Projetos (Jacareí)",
+     "addr": "Espaço Ventura, R. Enéas de Mesquita, 145, sala 01, Jardim Mesquita, Jacareí - SP, 12327-690",
+     "street": "R. Enéas de Mesquita, 145, sala 01 - Jardim Mesquita", "locality": "Jacareí", "postal": "12327-690",
+     "lat": -23.2998325, "lng": -45.9664184, "place_id": "ChIJWQqN3DbLzZQRca5MLfaHHE8",
+     "rating": 5.0, "reviews": 7,
+     "serves": "Jacareí"},
+]
+for u in UNITS:
+    q = quote_plus(u["gname"])
+    u["gmaps"] = f"https://www.google.com/maps/search/?api=1&query={q}&query_place_id={u['place_id']}"
+    u["route"] = f"https://www.google.com/maps/dir/?api=1&destination={q}&destination_place_id={u['place_id']}"
+for c in CITIES:
+    # a cidade é atendida pela unidade do mesmo WhatsApp
+    c["unit"] = next(u["slug"] for u in UNITS if u["phone"] == c["phone"])
 
 # marcas da faixa de logos e dos cards (logo em assets/brands/<slug>.svg).
 # O nome precisa ser igual ao campo "brand" do catálogo em src/app.js.
@@ -48,6 +77,8 @@ KICKER = "Autorizado a venda, instalação com garantia."
 
 # fotos oficiais dos aparelhos (assets/products/*.webp -> dist/img/produtos/)
 PRODUCT_IMG_DIR = "img/produtos"
+# fotos da equipe e da unidade (assets/photos/*.webp -> dist/img/fotos/)
+PHOTO_DIR = "img/fotos"
 
 SERVICES = ["Instalação de ar-condicionado", "Manutenção preventiva", "Higienização de ar-condicionado",
             "Infraestrutura para ar-condicionado em obra"]
@@ -73,6 +104,8 @@ def faq_items(city, kind):
          ["Use a calculadora na seção de aparelhos para ter uma estimativa pelo tamanho do ambiente. A equipe confirma a capacidade certa no orçamento."]),
         ("Quais cidades vocês atendem?",
          ["São José dos Campos, Jacareí, Taubaté, Pindamonhangaba, Caçapava, Mogi das Cruzes e o Litoral Norte."]),
+        ("Onde ficam as unidades da Zayin?",
+         [f"{u['name']}: {u['addr']}." for u in UNITS]),
     ]
     if kind == "home":
         return [comprar] + items
@@ -85,6 +118,43 @@ def data_uri(path):
 
 def esc(s):
     return html.escape(s, quote=True)
+
+
+def nota(x):
+    return f"{x:.1f}".replace(".", ",")
+
+
+def google_totals():
+    reviews = sum(u["reviews"] for u in UNITS)
+    rating = sum(u["rating"] * u["reviews"] for u in UNITS) / reviews
+    return nota(rating), reviews
+
+
+def unit_cards(cur, msg_city):
+    """Cards das unidades ao lado do mapa: endereço, nota no Google, rota e WhatsApp."""
+    units = sorted(UNITS, key=lambda u: u["slug"] != cur)  # a unidade da página vem primeiro
+    out = []
+    for u in units:
+        # a unidade de SJC também atende as cidades sem unidade: a mensagem cita a cidade da página
+        msg = "Olá, vim do seu site e quero fazer um orçamento."
+        msg += " Estou em Jacareí." if u["slug"] == "jacarei" else (msg_city if cur != "jacarei" else "")
+        stars = "".join('<svg aria-hidden="true"><use href="#i-star"/></svg>' for _ in range(round(u["rating"])))
+        out.append(f'''<article class="unit{" is-current" if u["slug"] == cur else ""}" data-unit="{u["slug"]}">
+          <div class="u-head">
+            <span class="u-ico"><svg aria-hidden="true"><use href="#i-pin"/></svg></span>
+            <div><small>Unidade</small><h3>{esc(u["name"])}</h3></div>
+          </div>
+          <p class="u-addr">{esc(u["addr"])}</p>
+          <a class="u-rate" href="{esc(u["gmaps"])}" target="_blank" rel="noopener">
+            <span class="stars">{stars}</span><b>{nota(u["rating"])}</b><span>{u["reviews"]} avaliações no Google</span>
+          </a>
+          <p class="u-serves"><b>WhatsApp {u["phone"][1]}</b>Atende {esc(u["serves"])}</p>
+          <div class="u-actions">
+            <a class="btn btn-wa btn-sm" data-wa="{esc(msg)}" data-wa-phone="{u["phone"][0]}" href="#"><svg aria-hidden="true"><use href="#i-wa"/></svg>WhatsApp</a>
+            <a class="btn btn-ghost btn-sm" href="{esc(u["route"])}" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-route"/></svg>Como chegar</a>
+          </div>
+        </article>''')
+    return "\n        ".join(out)
 
 
 def load_brands():
@@ -172,25 +242,38 @@ def build_page(city, kind, css, js, logo, logo_w, brands, root_prefix=None):
         for c in sorted(CITIES, key=lambda c: BUILDER_ORDER.index(c["slug"]))
     )
 
-    route = "\n      ".join(
-        (f'<span class="stop" aria-current="page"><span class="dot"></span><b>{esc(c["name"])}</b><small>Você está aqui</small></span>'
-         if c["slug"] == cur else
-         f'<a class="stop" href="{root}{c["slug"]}/{same_kind}"><span class="dot"></span><b>{esc(c["name"])}</b><small>Ver página</small></a>')
-        for c in CITIES
+    # mapa das unidades: botões por cidade (sem cidade na página, começa mostrando todas)
+    by_menu = sorted(CITIES, key=lambda c: BUILDER_ORDER.index(c["slug"]))
+    loc_chips = "\n        ".join(
+        [f'<button type="button" data-loc="all" aria-pressed="{str(not cur).lower()}">Todas as unidades</button>']
+        + [f'<button type="button" data-loc="{c["slug"]}" aria-pressed="{str(c["slug"] == cur).lower()}">{esc(c["name"])}</button>'
+           for c in by_menu]
     )
+    unit_name = {u["slug"]: u["name"] for u in UNITS}
+    loc_notes = {"all": "Duas unidades da Zayin, em São José dos Campos e em Jacareí. Escolha uma cidade para ver no mapa."}
+    for c in CITIES:
+        if c["slug"] in unit_name:
+            # o endereço completo já está no card da unidade
+            loc_notes[c["slug"]] = f"Unidade Zayin em {c['name']}. Endereço, rota e WhatsApp no card da unidade."
+        else:
+            loc_notes[c["slug"]] = (f"Em {c['name']}, a equipe da Zayin vai até você. "
+                                    f"O atendimento é pela unidade de {unit_name[c['unit']]}.")
+    loc_note = loc_notes[cur or "all"]
+    g_rating, g_reviews = google_totals()
 
     if is_home:
         nav = [("#aparelhos", "Aparelhos"), ("#marcas", "Marcas"), (svc_href, "Serviços"),
-               ("#garantia", "Garantia"), ("#cidades", "Cidades"), ("#duvidas", "Dúvidas")]
+               ("#garantia", "Garantia"), ("#cidades", "Unidades"), ("#duvidas", "Dúvidas")]
         drawer = [("#aparelhos", "Aparelhos"), ("#marcas", "Marcas"), ("#instalacao", "Instalação"),
-                  (svc_href, "Todos os serviços"), ("#garantia", "Garantia"), ("#cidades", "Cidades"), ("#duvidas", "Dúvidas")]
+                  (svc_href, "Todos os serviços"), ("#garantia", "Garantia"), ("#cidades", "Unidades e mapa"),
+                  (f"{svc_href}#sobre", "Sobre a Zayin"), ("#duvidas", "Dúvidas")]
         mbar_alt = '<a class="btn btn-ghost" href="#aparelhos">Aparelhos</a>'
     else:
         nav = [(f"{home_href}#aparelhos", "Aparelhos"), ("#instalacao", "Instalação"), ("#outros-servicos", "Serviços"),
                ("#orcamento", "Orçamento"), ("#garantia", "Garantia"), ("#duvidas", "Dúvidas")]
         drawer = [(home_href, "Início"), (f"{home_href}#aparelhos", "Aparelhos"), ("#instalacao", "Instalação"),
-                  ("#outros-servicos", "Outros serviços"), ("#orcamento", "Montar pedido"), ("#garantia", "Garantia"),
-                  ("#cidades", "Cidades"), ("#duvidas", "Dúvidas")]
+                  ("#outros-servicos", "Outros serviços"), ("#sobre", "Sobre a Zayin"), ("#orcamento", "Montar pedido"),
+                  ("#garantia", "Garantia"), ("#cidades", "Unidades e mapa"), ("#duvidas", "Dúvidas")]
         mbar_alt = '<a class="btn btn-ghost" href="#orcamento">Montar pedido</a>'
     nav_html = "\n      ".join(f'<a href="{h}">{esc(t)}</a>' for h, t in nav)
     drawer_html = "\n  ".join(f'<a class="dl" href="{h}">{esc(t)}</a>' for h, t in drawer)
@@ -201,26 +284,6 @@ def build_page(city, kind, css, js, logo, logo_w, brands, root_prefix=None):
              for c in BUILDER_ORDER]
     opts += ['<option value="litoral">Litoral Norte</option>', '<option value="outra">Outra cidade</option>']
     city_options = "\n              ".join(opts)
-
-    sjc_card = {
-        "phone": SJC_PHONE,
-        "cities": "São José dos Campos, Caçapava, Taubaté, Pindamonhangaba, Mogi das Cruzes e Litoral Norte",
-        "current": is_city and cur != "jacarei",
-        "msg": f"Olá, vim do seu site e quero fazer um orçamento.{msg_city if cur != 'jacarei' else ''}",
-    }
-    jac_card = {
-        "phone": JAC_PHONE,
-        "cities": "Jacareí",
-        "current": cur == "jacarei",
-        "msg": "Olá, vim do seu site e quero fazer um orçamento. Estou em Jacareí.",
-    }
-    cards = [jac_card, sjc_card] if cur == "jacarei" else [sjc_card, jac_card]
-    contacts = "\n      ".join(
-        f'''<div class="contact{" is-current" if k["current"] else ""}" data-reveal style="--d:{i * .1:.1f}s">
-        <div><small>WhatsApp</small><b>{k["phone"][1]}</b><p>{esc(k["cities"])}</p></div>
-        <a class="btn btn-wa btn-sm" data-wa="{esc(k["msg"])}" data-wa-phone="{k["phone"][0]}" href="#"><svg aria-hidden="true"><use href="#i-wa"/></svg>Chamar</a>
-      </div>''' for i, k in enumerate(cards)
-    )
 
     footer_cities = "\n          ".join(
         f'<li><a href="{root}{c["slug"]}/">Ar-condicionado em {esc(c["name"])}</a></li>'
@@ -252,6 +315,15 @@ def build_page(city, kind, css, js, logo, logo_w, brands, root_prefix=None):
         "areaServed": [c["name"] for c in CITIES] + ["Litoral Norte"],
         "brand": [{"@type": "Brand", "name": b["name"]} for b in brands],
         "sameAs": ["https://www.instagram.com/zayinarcondicionado/"],
+        "department": [{
+            "@type": "HVACBusiness",
+            "name": f"Zayin Ar Condicionado {u['name']}",
+            "telephone": "+55 " + u["phone"][1].replace("(", "").replace(")", ""),
+            "address": {"@type": "PostalAddress", "streetAddress": u["street"], "addressLocality": u["locality"],
+                        "addressRegion": "SP", "postalCode": u["postal"], "addressCountry": "BR"},
+            "geo": {"@type": "GeoCoordinates", "latitude": u["lat"], "longitude": u["lng"]},
+            "hasMap": u["gmaps"],
+        } for u in UNITS],
     }
     graph = [business]
     if is_home:
@@ -282,12 +354,24 @@ def build_page(city, kind, css, js, logo, logo_w, brands, root_prefix=None):
     page_cfg = {
         "kind": kind,
         "city": ({"slug": cur, "name": name, "phone": phone, "phoneLabel": phone_label} if is_city else None),
-        "cities": [{"slug": c["slug"], "name": c["name"], "phone": c["phone"][0], "phoneLabel": c["phone"][1]} for c in CITIES],
+        "cities": [{"slug": c["slug"], "name": c["name"], "phone": c["phone"][0], "phoneLabel": c["phone"][1],
+                    "short": c.get("short", c["name"]), "lat": c["lat"], "lng": c["lng"], "unit": c["unit"],
+                    "href": f"{root}{c['slug']}/{same_kind}"}
+                   for c in CITIES],
+        "units": [{"slug": u["slug"], "name": u["name"], "short": u["short"], "tip": u["tip"],
+                   "lat": u["lat"], "lng": u["lng"]} for u in UNITS],
+        "litoral": LITORAL,
+        "locNotes": loc_notes,
         "brands": [{"slug": b["slug"], "name": b["name"], "ratio": b["ratio"]} for b in brands],
         "imgBase": f"{root}{PRODUCT_IMG_DIR}/",
         "defaultPhone": SJC_PHONE[0],
         "defaultPhoneLabel": SJC_PHONE[1],
     }
+
+    # capa do vídeo do topo: é a primeira imagem que aparece, então já vem no <head>
+    preload = (f'<link rel="preload" as="image" href="{root}video/showroom-poster.webp" media="(max-width: 900px)">\n'
+               f'<link rel="preload" as="image" href="{root}video/hero-poster.webp" media="(min-width: 901px)">'
+               if is_home else "")
 
     main = include_parts((SRC / f"{'home' if is_home else 'servicos'}.html").read_text(encoding="utf-8"))
     tpl = (SRC / "layout.html").read_text(encoding="utf-8").replace("{{MAIN}}", main)
@@ -315,9 +399,14 @@ def build_page(city, kind, css, js, logo, logo_w, brands, root_prefix=None):
         "{{MBAR_ALT}}": mbar_alt,
         "{{PHONE_LABEL}}": phone_label,
         "{{CITY_MENU}}": city_menu,
-        "{{ROUTE}}": route,
+        "{{LOC_CHIPS}}": loc_chips,
+        "{{LOC_NOTE}}": esc(loc_note),
+        "{{UNITS}}": unit_cards(cur, msg_city),
+        "{{G_RATING}}": g_rating,
+        "{{G_REVIEWS}}": str(g_reviews),
+        "{{PHOTOS}}": f"{root}{PHOTO_DIR}/",
+        "{{PRELOAD}}": preload,
         "{{CITY_OPTIONS}}": city_options,
-        "{{CONTACTS}}": contacts,
         "{{FOOTER_CITIES}}": footer_cities,
         "{{BRAND_SYMBOLS}}": brand_symbols,
         "{{BRAND_LIST}}": brand_list,
@@ -347,7 +436,15 @@ def copy_video():
     src = ROOT / "assets" / "video"
     dst = DIST / "video"
     dst.mkdir(parents=True, exist_ok=True)
-    for f in sorted(src.glob("hero*.*")):
+    for f in sorted([*src.glob("*.mp4"), *src.glob("*.webp")]):
+        shutil.copyfile(f, dst / f.name)
+
+
+def copy_photos():
+    src = ROOT / "assets" / "photos"
+    dst = DIST / PHOTO_DIR
+    dst.mkdir(parents=True, exist_ok=True)
+    for f in sorted(src.glob("*.webp")):
         shutil.copyfile(f, dst / f.name)
 
 
@@ -368,6 +465,7 @@ def main():
     brands = load_brands()
     print("ok", copy_product_images(), "fotos de aparelhos ->", DIST / PRODUCT_IMG_DIR)
     copy_video()
+    copy_photos()
     for city in [None] + CITIES:
         base = DIST / city["slug"] if city else DIST
         write(base / "index.html", build_page(city, "home", css, js, logo, logo_w, brands))
