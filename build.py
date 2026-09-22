@@ -39,6 +39,7 @@ LITORAL = {"name": "Litoral Norte", "lat": -23.6203, "lng": -45.4131}  # ponto n
 # Nota e número de avaliações conferidos em 22/09/2026: atualize aqui quando mudarem.
 UNITS = [
     {"slug": "saojosedoscampos", "name": "São José dos Campos", "short": "SJC", "tip": "top", "phone": SJC_PHONE,
+     "label": "Base operacional",
      "gname": "Zayin ar condicionado instalação manutenção venda e projetos",
      "addr": "R. Mario Campos, São José dos Campos - SP, 12221-750",
      "street": "R. Mario Campos", "locality": "São José dos Campos", "postal": "12221-750",
@@ -46,6 +47,8 @@ UNITS = [
      "rating": 5.0, "reviews": 54,
      "serves": "São José dos Campos, Caçapava, Taubaté, Pindamonhangaba, Mogi das Cruzes e Litoral Norte"},
     {"slug": "jacarei", "name": "Jacareí", "short": "Jacareí", "tip": "left", "phone": JAC_PHONE,
+     # escritório: recebe visita com hora marcada, então o botão convida a agendar
+     "label": "Escritório", "visit": "Olá, vim do seu site e quero agendar uma visita ao escritório de Jacareí.",
      "gname": "Zayin Ar Condicionado Instalação Venda e Projetos (Jacareí)",
      "addr": "Espaço Ventura, R. Enéas de Mesquita, 145, sala 01, Jardim Mesquita, Jacareí - SP, 12327-690",
      "street": "R. Enéas de Mesquita, 145, sala 01 - Jardim Mesquita", "locality": "Jacareí", "postal": "12327-690",
@@ -138,11 +141,14 @@ def unit_cards(cur, msg_city):
         # a unidade de SJC também atende as cidades sem unidade: a mensagem cita a cidade da página
         msg = "Olá, vim do seu site e quero fazer um orçamento."
         msg += " Estou em Jacareí." if u["slug"] == "jacarei" else (msg_city if cur != "jacarei" else "")
+        btn, nocity = "WhatsApp", ""
+        if u.get("visit"):
+            btn, msg, nocity = "Agendar visita", u["visit"], " data-wa-nocity"
         stars = "".join('<svg aria-hidden="true"><use href="#i-star"/></svg>' for _ in range(round(u["rating"])))
         out.append(f'''<article class="unit{" is-current" if u["slug"] == cur else ""}" data-unit="{u["slug"]}">
           <div class="u-head">
             <span class="u-ico"><svg aria-hidden="true"><use href="#i-pin"/></svg></span>
-            <div><small>Unidade</small><h3>{esc(u["name"])}</h3></div>
+            <div><small>{esc(u["label"])}</small><h3>{esc(u["name"])}</h3></div>
           </div>
           <p class="u-addr">{esc(u["addr"])}</p>
           <a class="u-rate" href="{esc(u["gmaps"])}" target="_blank" rel="noopener">
@@ -150,7 +156,7 @@ def unit_cards(cur, msg_city):
           </a>
           <p class="u-serves"><b>WhatsApp {u["phone"][1]}</b>Atende {esc(u["serves"])}</p>
           <div class="u-actions">
-            <a class="btn btn-wa btn-sm" data-wa="{esc(msg)}" data-wa-phone="{u["phone"][0]}" href="#"><svg aria-hidden="true"><use href="#i-wa"/></svg>WhatsApp</a>
+            <a class="btn btn-wa btn-sm" data-wa="{esc(msg)}" data-wa-phone="{u["phone"][0]}"{nocity} href="#"><svg aria-hidden="true"><use href="#i-wa"/></svg>{btn}</a>
             <a class="btn btn-ghost btn-sm" href="{esc(u["route"])}" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-route"/></svg>Como chegar</a>
           </div>
         </article>''')
@@ -250,15 +256,20 @@ def build_page(city, kind, css, js, logo, logo_w, brands, root_prefix=None):
            for c in by_menu]
     )
     unit_name = {u["slug"]: u["name"] for u in UNITS}
-    loc_notes = {"all": "Duas unidades da Zayin, em São José dos Campos e em Jacareí. Escolha uma cidade para ver no mapa."}
+    resumo = " e ".join(f"{u['label'][:1].lower()}{u['label'][1:]} em {u['name']}" for u in UNITS)
+    loc_notes = {"all": f"A Zayin tem {resumo}. Escolha uma cidade para ver no mapa."}
     for c in CITIES:
         if c["slug"] in unit_name:
-            # o endereço completo já está no card da unidade
-            loc_notes[c["slug"]] = f"Unidade Zayin em {c['name']}. Endereço, rota e WhatsApp no card da unidade."
+            u = next(x for x in UNITS if x["slug"] == c["slug"])
+            # na home só existe o mapa, então a nota traz o endereço; na de serviços ele está no card
+            loc_notes[c["slug"]] = (f"{u['label']} da Zayin em {c['name']}: {u['addr']}." if is_home
+                                    else f"{u['label']} da Zayin em {c['name']}. Endereço, rota e WhatsApp no card.")
         else:
             loc_notes[c["slug"]] = (f"Em {c['name']}, a equipe da Zayin vai até você. "
                                     f"O atendimento é pela unidade de {unit_name[c['unit']]}.")
     loc_note = loc_notes[cur or "all"]
+    # os cards das unidades só na página de serviços: na home eles poluem, lá fica só o mapa
+    units_html = "" if is_home else f'<div class="units">\n        {unit_cards(cur, msg_city)}\n        </div>'
     g_rating, g_reviews = google_totals()
 
     if is_home:
@@ -359,7 +370,7 @@ def build_page(city, kind, css, js, logo, logo_w, brands, root_prefix=None):
                     "href": f"{root}{c['slug']}/{same_kind}"}
                    for c in CITIES],
         "units": [{"slug": u["slug"], "name": u["name"], "short": u["short"], "tip": u["tip"],
-                   "lat": u["lat"], "lng": u["lng"]} for u in UNITS],
+                   "lat": u["lat"], "lng": u["lng"], "gmaps": u["gmaps"]} for u in UNITS],
         "litoral": LITORAL,
         "locNotes": loc_notes,
         "brands": [{"slug": b["slug"], "name": b["name"], "ratio": b["ratio"]} for b in brands],
@@ -401,7 +412,8 @@ def build_page(city, kind, css, js, logo, logo_w, brands, root_prefix=None):
         "{{CITY_MENU}}": city_menu,
         "{{LOC_CHIPS}}": loc_chips,
         "{{LOC_NOTE}}": esc(loc_note),
-        "{{UNITS}}": unit_cards(cur, msg_city),
+        "{{UNITS}}": units_html,
+        "{{LOC_CLASS}}": " is-map-only" if is_home else "",
         "{{G_RATING}}": g_rating,
         "{{G_REVIEWS}}": str(g_reviews),
         "{{PHOTOS}}": f"{root}{PHOTO_DIR}/",

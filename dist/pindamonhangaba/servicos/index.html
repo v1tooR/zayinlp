@@ -959,6 +959,7 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
 .loc-chips button:hover { box-shadow: inset 0 0 0 1.5px var(--line-strong); }
 .loc-chips button[aria-pressed="true"] { background: var(--duct); color: #fff; box-shadow: none; }
 .loc-grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 20px; align-items: start; }
+.loc-grid.is-map-only { grid-template-columns: 1fr; }   /* home: só o mapa */
 .loc-map-wrap { min-width: 0; }
 .loc-map {
   display: none; position: relative; z-index: 0;
@@ -1557,7 +1558,7 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
         <p class="eyebrow">Onde estamos</p>
         <h2 class="h-section">Unidades no Vale do Paraíba, atendimento até o litoral</h2>
       </div>
-      <p class="lede">A Zayin tem unidades em São José dos Campos e em Jacareí e atende também Taubaté, Pindamonhangaba, Caçapava, Mogi das Cruzes e o Litoral Norte.</p>
+      <p class="lede">A base operacional fica em São José dos Campos e o escritório em Jacareí, onde você pode agendar uma visita. Atendemos também Taubaté, Pindamonhangaba, Caçapava, Mogi das Cruzes e o Litoral Norte.</p>
     </div>
     <div class="locator" data-reveal>
       <div class="loc-chips" role="group" aria-label="Ver no mapa">
@@ -1578,7 +1579,7 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
         <article class="unit" data-unit="saojosedoscampos">
           <div class="u-head">
             <span class="u-ico"><svg aria-hidden="true"><use href="#i-pin"/></svg></span>
-            <div><small>Unidade</small><h3>São José dos Campos</h3></div>
+            <div><small>Base operacional</small><h3>São José dos Campos</h3></div>
           </div>
           <p class="u-addr">R. Mario Campos, São José dos Campos - SP, 12221-750</p>
           <a class="u-rate" href="https://www.google.com/maps/search/?api=1&amp;query=Zayin+ar+condicionado+instala%C3%A7%C3%A3o+manuten%C3%A7%C3%A3o+venda+e+projetos&amp;query_place_id=ChIJrbxfjAdLzJQRSSlSiRFEZSE" target="_blank" rel="noopener">
@@ -1593,7 +1594,7 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
         <article class="unit" data-unit="jacarei">
           <div class="u-head">
             <span class="u-ico"><svg aria-hidden="true"><use href="#i-pin"/></svg></span>
-            <div><small>Unidade</small><h3>Jacareí</h3></div>
+            <div><small>Escritório</small><h3>Jacareí</h3></div>
           </div>
           <p class="u-addr">Espaço Ventura, R. Enéas de Mesquita, 145, sala 01, Jardim Mesquita, Jacareí - SP, 12327-690</p>
           <a class="u-rate" href="https://www.google.com/maps/search/?api=1&amp;query=Zayin+Ar+Condicionado+Instala%C3%A7%C3%A3o+Venda+e+Projetos+%28Jacare%C3%AD%29&amp;query_place_id=ChIJWQqN3DbLzZQRca5MLfaHHE8" target="_blank" rel="noopener">
@@ -1601,7 +1602,7 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
           </a>
           <p class="u-serves"><b>WhatsApp (12) 99201-9832</b>Atende Jacareí</p>
           <div class="u-actions">
-            <a class="btn btn-wa btn-sm" data-wa="Olá, vim do seu site e quero fazer um orçamento. Estou em Jacareí." data-wa-phone="5512992019832" href="#"><svg aria-hidden="true"><use href="#i-wa"/></svg>WhatsApp</a>
+            <a class="btn btn-wa btn-sm" data-wa="Olá, vim do seu site e quero agendar uma visita ao escritório de Jacareí." data-wa-phone="5512992019832" data-wa-nocity href="#"><svg aria-hidden="true"><use href="#i-wa"/></svg>Agendar visita</a>
             <a class="btn btn-ghost btn-sm" href="https://www.google.com/maps/dir/?api=1&amp;destination=Zayin+Ar+Condicionado+Instala%C3%A7%C3%A3o+Venda+e+Projetos+%28Jacare%C3%AD%29&amp;destination_place_id=ChIJWQqN3DbLzZQRca5MLfaHHE8" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-route"/></svg>Como chegar</a>
           </div>
         </article>
@@ -1706,7 +1707,7 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
   <a class="btn btn-wa" data-wa="Olá, vim do seu site e quero fazer um orçamento. Estou em Pindamonhangaba." href="#"><svg aria-hidden="true"><use href="#i-wa"/></svg>Orçamento</a>
 </div>
 
-<script>window.ZAYIN = {"kind": "servicos", "city": {"slug": "pindamonhangaba", "name": "Pindamonhangaba", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659"}, "cities": [{"slug": "mogidascruzes", "name": "Mogi das Cruzes", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659", "short": "Mogi", "lat": -23.5227, "lng": -46.1883, "unit": "saojosedoscampos", "href": "../../mogidascruzes/servicos/"}, {"slug": "jacarei", "name": "Jacareí", "phone": "5512992019832", "phoneLabel": "(12) 99201-9832", "short": "Jacareí", "lat": -23.3053, "lng": -45.9658, "unit": "jacarei", "href": "../../jacarei/servicos/"}, {"slug": "saojosedoscampos", "name": "São José dos Campos", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659", "short": "SJC", "lat": -23.1896, "lng": -45.8841, "unit": "saojosedoscampos", "href": "../../saojosedoscampos/servicos/"}, {"slug": "cacapava", "name": "Caçapava", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659", "short": "Caçapava", "lat": -23.1017, "lng": -45.7069, "unit": "saojosedoscampos", "href": "../../cacapava/servicos/"}, {"slug": "taubate", "name": "Taubaté", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659", "short": "Taubaté", "lat": -23.0264, "lng": -45.5553, "unit": "saojosedoscampos", "href": "../../taubate/servicos/"}, {"slug": "pindamonhangaba", "name": "Pindamonhangaba", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659", "short": "Pinda", "lat": -22.9246, "lng": -45.4613, "unit": "saojosedoscampos", "href": "../../pindamonhangaba/servicos/"}], "units": [{"slug": "saojosedoscampos", "name": "São José dos Campos", "short": "SJC", "tip": "top", "lat": -23.1669442, "lng": -45.8357906}, {"slug": "jacarei", "name": "Jacareí", "short": "Jacareí", "tip": "left", "lat": -23.2998325, "lng": -45.9664184}], "litoral": {"name": "Litoral Norte", "lat": -23.6203, "lng": -45.4131}, "locNotes": {"all": "Duas unidades da Zayin, em São José dos Campos e em Jacareí. Escolha uma cidade para ver no mapa.", "mogidascruzes": "Em Mogi das Cruzes, a equipe da Zayin vai até você. O atendimento é pela unidade de São José dos Campos.", "jacarei": "Unidade Zayin em Jacareí. Endereço, rota e WhatsApp no card da unidade.", "saojosedoscampos": "Unidade Zayin em São José dos Campos. Endereço, rota e WhatsApp no card da unidade.", "cacapava": "Em Caçapava, a equipe da Zayin vai até você. O atendimento é pela unidade de São José dos Campos.", "taubate": "Em Taubaté, a equipe da Zayin vai até você. O atendimento é pela unidade de São José dos Campos.", "pindamonhangaba": "Em Pindamonhangaba, a equipe da Zayin vai até você. O atendimento é pela unidade de São José dos Campos."}, "brands": [{"slug": "samsung", "name": "Samsung", "ratio": 6.543}, {"slug": "lg", "name": "LG", "ratio": 2.268}, {"slug": "midea", "name": "Midea", "ratio": 2.492}, {"slug": "elgin", "name": "Elgin", "ratio": 2.403}, {"slug": "gree", "name": "Gree", "ratio": 5.121}, {"slug": "daikin", "name": "Daikin", "ratio": 4.638}], "imgBase": "../../img/produtos/", "defaultPhone": "5512997067659", "defaultPhoneLabel": "(12) 99706-7659"};</script>
+<script>window.ZAYIN = {"kind": "servicos", "city": {"slug": "pindamonhangaba", "name": "Pindamonhangaba", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659"}, "cities": [{"slug": "mogidascruzes", "name": "Mogi das Cruzes", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659", "short": "Mogi", "lat": -23.5227, "lng": -46.1883, "unit": "saojosedoscampos", "href": "../../mogidascruzes/servicos/"}, {"slug": "jacarei", "name": "Jacareí", "phone": "5512992019832", "phoneLabel": "(12) 99201-9832", "short": "Jacareí", "lat": -23.3053, "lng": -45.9658, "unit": "jacarei", "href": "../../jacarei/servicos/"}, {"slug": "saojosedoscampos", "name": "São José dos Campos", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659", "short": "SJC", "lat": -23.1896, "lng": -45.8841, "unit": "saojosedoscampos", "href": "../../saojosedoscampos/servicos/"}, {"slug": "cacapava", "name": "Caçapava", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659", "short": "Caçapava", "lat": -23.1017, "lng": -45.7069, "unit": "saojosedoscampos", "href": "../../cacapava/servicos/"}, {"slug": "taubate", "name": "Taubaté", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659", "short": "Taubaté", "lat": -23.0264, "lng": -45.5553, "unit": "saojosedoscampos", "href": "../../taubate/servicos/"}, {"slug": "pindamonhangaba", "name": "Pindamonhangaba", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659", "short": "Pinda", "lat": -22.9246, "lng": -45.4613, "unit": "saojosedoscampos", "href": "../../pindamonhangaba/servicos/"}], "units": [{"slug": "saojosedoscampos", "name": "São José dos Campos", "short": "SJC", "tip": "top", "lat": -23.1669442, "lng": -45.8357906, "gmaps": "https://www.google.com/maps/search/?api=1&query=Zayin+ar+condicionado+instala%C3%A7%C3%A3o+manuten%C3%A7%C3%A3o+venda+e+projetos&query_place_id=ChIJrbxfjAdLzJQRSSlSiRFEZSE"}, {"slug": "jacarei", "name": "Jacareí", "short": "Jacareí", "tip": "left", "lat": -23.2998325, "lng": -45.9664184, "gmaps": "https://www.google.com/maps/search/?api=1&query=Zayin+Ar+Condicionado+Instala%C3%A7%C3%A3o+Venda+e+Projetos+%28Jacare%C3%AD%29&query_place_id=ChIJWQqN3DbLzZQRca5MLfaHHE8"}], "litoral": {"name": "Litoral Norte", "lat": -23.6203, "lng": -45.4131}, "locNotes": {"all": "A Zayin tem base operacional em São José dos Campos e escritório em Jacareí. Escolha uma cidade para ver no mapa.", "mogidascruzes": "Em Mogi das Cruzes, a equipe da Zayin vai até você. O atendimento é pela unidade de São José dos Campos.", "jacarei": "Escritório da Zayin em Jacareí. Endereço, rota e WhatsApp no card.", "saojosedoscampos": "Base operacional da Zayin em São José dos Campos. Endereço, rota e WhatsApp no card.", "cacapava": "Em Caçapava, a equipe da Zayin vai até você. O atendimento é pela unidade de São José dos Campos.", "taubate": "Em Taubaté, a equipe da Zayin vai até você. O atendimento é pela unidade de São José dos Campos.", "pindamonhangaba": "Em Pindamonhangaba, a equipe da Zayin vai até você. O atendimento é pela unidade de São José dos Campos."}, "brands": [{"slug": "samsung", "name": "Samsung", "ratio": 6.543}, {"slug": "lg", "name": "LG", "ratio": 2.268}, {"slug": "midea", "name": "Midea", "ratio": 2.492}, {"slug": "elgin", "name": "Elgin", "ratio": 2.403}, {"slug": "gree", "name": "Gree", "ratio": 5.121}, {"slug": "daikin", "name": "Daikin", "ratio": 4.638}], "imgBase": "../../img/produtos/", "defaultPhone": "5512997067659", "defaultPhoneLabel": "(12) 99706-7659"};</script>
 <script>
 (() => {
   'use strict';
@@ -1789,9 +1790,11 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
      Links de WhatsApp com mensagem pronta
      --------------------------------------------------------- */
   // sem cidade escolhida, a mensagem termina com "Minha cidade:" para a pessoa completar no WhatsApp
+  // data-wa-nocity: mensagens que não dependem da cidade (ex.: agendar visita no escritório)
   const CITY_ASK = CITY ? '' : '\nMinha cidade: ';
   $$('[data-wa]').forEach(a => {
-    const text = a.dataset.wa + (/Estou em /.test(a.dataset.wa) ? '' : CITY_ASK);
+    const ask = /Estou em /.test(a.dataset.wa) || 'waNocity' in a.dataset ? '' : CITY_ASK;
+    const text = a.dataset.wa + ask;
     a.href = wa(a.dataset.waPhone || PAGE_PHONE, text);
     a.target = '_blank';
     a.rel = 'noopener';
@@ -2293,12 +2296,18 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
       chips.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.loc === slug)));
       cards.forEach(c => c.classList.toggle('is-current', c.dataset.unit === unitSlug));
       note.textContent = NOTES[slug] || NOTES.all || '';
-      if (city && !(CITY && CITY.slug === slug)) {
+      const links = [];
+      if (city && !(CITY && CITY.slug === slug)) links.push([pageHref(city.href), `Ver a página de ${city.name}`, false]);
+      // na home não há cards das unidades, então o link do Google fica na própria nota
+      if (byUnit[slug] && !cards.length) links.push([byUnit[slug].gmaps, 'Abrir no Google Maps', true]);
+      links.forEach(([href, text, ext], i) => {
+        note.append(i ? ' · ' : ' ');
         const a = document.createElement('a');
-        a.href = pageHref(city.href);
-        a.textContent = `Ver a página de ${city.name}`;
-        note.append(' ', a);
-      }
+        a.href = href;
+        a.textContent = text;
+        if (ext) { a.target = '_blank'; a.rel = 'noopener'; }
+        note.append(a);
+      });
       Object.entries(layers).forEach(([k, l]) => l.setOn(k === slug || k === unitSlug));
       applyView(animate);
     };

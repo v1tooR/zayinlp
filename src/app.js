@@ -79,9 +79,11 @@
      Links de WhatsApp com mensagem pronta
      --------------------------------------------------------- */
   // sem cidade escolhida, a mensagem termina com "Minha cidade:" para a pessoa completar no WhatsApp
+  // data-wa-nocity: mensagens que não dependem da cidade (ex.: agendar visita no escritório)
   const CITY_ASK = CITY ? '' : '\nMinha cidade: ';
   $$('[data-wa]').forEach(a => {
-    const text = a.dataset.wa + (/Estou em /.test(a.dataset.wa) ? '' : CITY_ASK);
+    const ask = /Estou em /.test(a.dataset.wa) || 'waNocity' in a.dataset ? '' : CITY_ASK;
+    const text = a.dataset.wa + ask;
     a.href = wa(a.dataset.waPhone || PAGE_PHONE, text);
     a.target = '_blank';
     a.rel = 'noopener';
@@ -583,12 +585,18 @@
       chips.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.loc === slug)));
       cards.forEach(c => c.classList.toggle('is-current', c.dataset.unit === unitSlug));
       note.textContent = NOTES[slug] || NOTES.all || '';
-      if (city && !(CITY && CITY.slug === slug)) {
+      const links = [];
+      if (city && !(CITY && CITY.slug === slug)) links.push([pageHref(city.href), `Ver a página de ${city.name}`, false]);
+      // na home não há cards das unidades, então o link do Google fica na própria nota
+      if (byUnit[slug] && !cards.length) links.push([byUnit[slug].gmaps, 'Abrir no Google Maps', true]);
+      links.forEach(([href, text, ext], i) => {
+        note.append(i ? ' · ' : ' ');
         const a = document.createElement('a');
-        a.href = pageHref(city.href);
-        a.textContent = `Ver a página de ${city.name}`;
-        note.append(' ', a);
-      }
+        a.href = href;
+        a.textContent = text;
+        if (ext) { a.target = '_blank'; a.rel = 'noopener'; }
+        note.append(a);
+      });
       Object.entries(layers).forEach(([k, l]) => l.setOn(k === slug || k === unitSlug));
       applyView(animate);
     };
