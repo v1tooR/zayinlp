@@ -379,7 +379,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 @media (max-width: 900px) {
   .hero-grid { grid-template-columns: 1fr; }
   .svc-hero-photo .hm-badge { left: 12px; bottom: 12px; }
-  /* celular: showroom na tela inteira, pouco texto e os botões no pé da seção */
+  /* celular: vídeo na tela inteira, pouco texto e os botões no pé da seção */
   .hero-video {
     min-height: 100vh; min-height: 100svh; align-items: flex-end;
     border-radius: 0 0 28px 28px; overflow: hidden;
@@ -595,12 +595,14 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .b-form { display: grid; gap: 28px; }
 .b-form fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 .b-form legend { font-weight: 700; color: var(--duct); font-size: 17px; margin-bottom: 12px; padding: 0; }
-.tiles { display: flex; flex-wrap: wrap; gap: 10px; }
-.tile { position: relative; }
+/* opções do pedido: colunas iguais e todas as caixas com a mesma altura,
+   mesmo quando o texto de uma delas ocupa duas linhas */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); grid-auto-rows: 1fr; gap: 10px; }
+.tile { position: relative; display: flex; }
 .tile input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
 .tile span {
-  display: inline-flex; align-items: center; gap: 10px;
-  min-height: 48px; padding: 10px 16px;
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  min-height: 48px; padding: 10px 14px;
   border-radius: 14px; background: var(--ice);
   box-shadow: inset 0 0 0 1.5px var(--line);
   font-weight: 580; font-size: 15.5px; color: var(--duct);
@@ -670,8 +672,6 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 }
 @media (max-width: 520px) {
   .b-row { grid-template-columns: 1fr; }
-  .tile { flex: 1 1 calc(50% - 5px); }
-  .tile span { width: 100%; }
 }
 
 /* =========================================================
@@ -782,9 +782,12 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
 @media (max-width: 860px) {
   .calc-inner { grid-template-columns: 1fr; }
   .calc-fields { grid-template-columns: 1fr; padding: 22px; }
-  .toolbar .select { flex: 1 1 calc(50% - 6px); min-width: 0; font-size: 14px; padding-left: 12px; padding-right: 36px; background-position: right 10px center; }
-  .seg { width: 100%; flex-wrap: nowrap; }
-  .seg button { flex: 1 1 auto; padding: 0 10px; }
+  /* "Todas as marcas" é o texto mais longo: esse seletor fica com um pouco mais de espaço */
+  .toolbar .select { flex: 1 1 0; min-width: 0; font-size: 14px; padding-left: 12px; padding-right: 34px; background-position: right 10px center; }
+  .toolbar #f-brand { flex-grow: 1.18; }
+  /* quatro filtros do mesmo tamanho, cada um numa linha só */
+  .seg { width: 100%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  .seg button { padding: 0 6px; font-size: 14px; white-space: nowrap; }
   .toolbar .spacer { display: none; }
   .btn-calc { flex: 1 1 100%; justify-content: center; min-height: 40px; }
 }
@@ -865,6 +868,14 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
 @media (max-width: 400px) {
   .product .t-full { display: none; }
   .product .t-short { display: inline; }
+}
+/* telas estreitas: o texto dos filtros precisa caber sem cortar */
+@media (max-width: 410px) {
+  .seg button { font-size: 13px; padding: 0 4px; }
+  .toolbar .select { font-size: 13.5px; padding-left: 10px; padding-right: 30px; background-position: right 8px center; background-size: 16px; }
+}
+@media (max-width: 345px) {
+  .toolbar .select { flex-basis: 100%; }   /* lado a lado não cabem: um por linha */
 }
 
 .empty {
@@ -1875,7 +1886,7 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
   };
 
   // vídeo de fundo. Computador: o aparelho "liga" uma vez e fica parado no último quadro,
-  // voltando a tocar quando a pessoa sobe até o topo. Celular: showroom das marcas em loop.
+  // voltando a tocar quando a pessoa sobe até o topo. Celular: vídeo da Zayin em loop.
   const hv = $('.hv-video');
   if (hv && !reduce) {
     const small = matchMedia('(max-width: 900px)').matches;

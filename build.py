@@ -369,7 +369,7 @@ def build_page(city, kind, css, js, logo, logo_w, brands, root_prefix=None):
     }
 
     # capa do vídeo do topo: é a primeira imagem que aparece, então já vem no <head>
-    preload = (f'<link rel="preload" as="image" href="{root}video/showroom-poster.webp" media="(max-width: 900px)">\n'
+    preload = (f'<link rel="preload" as="image" href="{root}video/fundo-poster.webp" media="(max-width: 900px)">\n'
                f'<link rel="preload" as="image" href="{root}video/hero-poster.webp" media="(min-width: 901px)">'
                if is_home else "")
 

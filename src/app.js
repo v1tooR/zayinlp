@@ -176,7 +176,7 @@
   };
 
   // vídeo de fundo. Computador: o aparelho "liga" uma vez e fica parado no último quadro,
-  // voltando a tocar quando a pessoa sobe até o topo. Celular: showroom das marcas em loop.
+  // voltando a tocar quando a pessoa sobe até o topo. Celular: vídeo da Zayin em loop.
   const hv = $('.hv-video');
   if (hv && !reduce) {
     const small = matchMedia('(max-width: 900px)').matches;
