@@ -538,6 +538,32 @@
     perkGrid.addEventListener('scroll', () => requestAnimationFrame(syncDots), { passive: true });
   }
 
+  /* avaliações do Google: setas passam de card em card; texto longo ganha "Ler mais" */
+  $$('.rv').forEach(rv => {
+    const track = $('.rv-track', rv);
+    const prev = $('.rv-prev', rv), next = $('.rv-next', rv);
+    const step = () => {
+      const card = $('.rv-card', track);
+      return card ? card.getBoundingClientRect().width + parseFloat(getComputedStyle(track).columnGap || 0) : track.clientWidth;
+    };
+    const sync = () => {
+      prev.disabled = track.scrollLeft <= 2;
+      next.disabled = track.scrollLeft >= track.scrollWidth - track.clientWidth - 2;
+    };
+    prev.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: reduce ? 'auto' : 'smooth' }));
+    next.addEventListener('click', () => track.scrollBy({ left: step(), behavior: reduce ? 'auto' : 'smooth' }));
+    track.addEventListener('scroll', () => requestAnimationFrame(sync), { passive: true });
+    addEventListener('resize', sync);
+    sync();
+    $$('.rv-text', rv).forEach(p => {
+      if (p.scrollHeight - p.clientHeight < 4) return;
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'rv-more'; b.textContent = 'Ler mais';
+      b.addEventListener('click', () => { b.textContent = p.classList.toggle('is-open') ? 'Ler menos' : 'Ler mais'; });
+      p.after(b);
+    });
+  });
+
   /* ---------------------------------------------------------
      Mapa das unidades. Sem cidade na página mostra todas; com cidade, mostra a de lá.
      Leaflet + OpenStreetMap, carregados só quando a seção chega perto da tela.

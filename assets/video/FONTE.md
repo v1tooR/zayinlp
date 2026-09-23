@@ -10,10 +10,10 @@
 ## Topo no celular
 - `fundo.mp4`: vídeo enviado pela Zayin (22/09/2026, `fundo.mp4`), vertical 1080x1920: showroom com as marcas,
   instalação e apresentação de produtos.
-- Tratamento: corte de 100 px no topo (tira a marca d'água do CapCut), começa em 2,8 s (a abertura era uma
-  transição a partir do preto, que piscava a cada volta do loop), loop fechado com fusão de 0,7 s (9,8 s no total),
-  reduzido para 720x1214, sem áudio (a trilha original já era muda).
-- `fundo-poster.webp`: primeiro quadro do loop.
+- Tratamento: corte de 100 px no topo (tira a marca d'água do CapCut), vídeo inteiro com a abertura
+  (a cortina preta e o recorte do showroom são efeitos que o cliente pediu para manter, 23/09/2026),
+  13,3 s, reduzido para 720x1214, sem áudio (a trilha original já era muda).
+- `fundo-poster.webp`: quadro do showroom em 1,2 s (o primeiro quadro é a cortina preta).
 - O vídeo anterior (`showroom.mp4`, só o showroom) saiu daqui quando este entrou.
 
 ## Seção "Instalação e serviços"

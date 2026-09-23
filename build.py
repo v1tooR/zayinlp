@@ -60,6 +60,42 @@ for u in UNITS:
     q = quote_plus(u["gname"])
     u["gmaps"] = f"https://www.google.com/maps/search/?api=1&query={q}&query_place_id={u['place_id']}"
     u["route"] = f"https://www.google.com/maps/dir/?api=1&destination={q}&destination_place_id={u['place_id']}"
+
+# avaliações do Google mostradas na seção de garantia (todas 5 estrelas), copiadas dos perfis em 23/09/2026.
+# Texto como o cliente escreveu; nome só com a inicial do sobrenome; sem a foto de perfil (é pessoal).
+# photo = foto que o cliente postou na avaliação (assets/photos/<photo>.webp); sem photo o card é só texto.
+REVIEWS = [
+    {"name": "Tatiane K.", "unit": "saojosedoscampos", "photo": "cliente-tatiane",
+     "text": "Escolhi a Zayin ao acaso pelo Google, e tomei como base as avaliações dos clientes anteriores, portanto "
+             "gostaria de deixar a minha opinião após o serviço executado. Primeiramente gostaria de falar do atendimento "
+             "e atenção ao cliente, o Lucas foi meu primeiro contato e agradeço pela disposição em me atender com atenção. "
+             "Os meninos que vieram para a instalação uma simpatia também, preço justo, cumprem o prazo e testam cada "
+             "aparelho antes de finalizarem o serviço. Estão de parabéns e super indico"},
+    {"name": "Hisashi H.", "unit": "saojosedoscampos", "photo": "cliente-hisashi",
+     "text": "A instalação foi feita com bastante atenção pelo técnico, o valor também estáva dentro do esperado, "
+             "material de cobre, eu tive uma boa experiência com a empresa."},
+    {"name": "Clarisson O.", "unit": "saojosedoscampos",
+     "text": "Instalaram meu ar-condicionado e ficou muito bom. Fizeram um serviço bem caprichado e organizado. "
+             "Testaram tudo na hora e explicaram o funcionamento. Até agora está funcionando perfeito. Recomendo."},
+    {"name": "Ricardo S.", "unit": "jacarei", "photo": "cliente-ricardo",
+     "text": "Excelente atendimento e mão de obra especializada, very good!"},
+    {"name": "Cleusa G.", "unit": "saojosedoscampos", "photo": "cliente-cleusa",
+     "text": "Desde o início, só alegria. Empresa: organizada, profissional, responde rapidinho, muito foco no cliente. "
+             "Instalação: nota 10. Colaboradores eficientes, prazo bem rápido, pessoal bastante conhecedor do assunto. Nota 10."},
+    {"name": "Rafael B.", "unit": "saojosedoscampos",
+     "text": "Escolhi eles devido a nota no Google e nao me arrepender. Foram extremamente atenciosos entendendo o que "
+             "queria e produzeram e executaram um excelente serviço. Super bem feito e no capricho."},
+    {"name": "Osvaldo J.", "unit": "saojosedoscampos", "photo": "cliente-osvaldo",
+     "text": "Ótimo serviço, instalação muito bem feita, pontuais."},
+    {"name": "Leonardo R.", "unit": "jacarei",
+     "text": "Empresa de confiança, preco justo e qualidade. Instalaram 4 ar na minha casa, recomendadissimo!"},
+    {"name": "Taislane S.", "unit": "saojosedoscampos", "photo": "cliente-taislane",
+     "text": "O Lucas é muito atencioso e educado! Fez a instalação do meu ar condicionado e ficou ótimo! "
+             "Super recomendo o serviço!"},
+    {"name": "Adriano A.", "unit": "jacarei",
+     "text": "Ótimos profissionais , deixa o local limpo e ótimo preço"},
+]
+
 for c in CITIES:
     # a cidade é atendida pela unidade do mesmo WhatsApp
     c["unit"] = next(u["slug"] for u in UNITS if u["phone"] == c["phone"])
@@ -131,6 +167,54 @@ def google_totals():
     reviews = sum(u["reviews"] for u in UNITS)
     rating = sum(u["rating"] * u["reviews"] for u in UNITS) / reviews
     return nota(rating), reviews
+
+
+GOOGLE_G = ('<svg viewBox="0 0 24 24" aria-hidden="true">'
+            '<path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"/>'
+            '<path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z"/>'
+            '<path fill="#FBBC05" d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.98-3.09z"/>'
+            '<path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.98 3.09c.95-2.85 3.6-4.96 6.73-4.96z"/>'
+            '</svg>')
+
+
+def reviews_html(root, g_rating, g_reviews):
+    """Bloco de avaliações do Google na seção de garantia: nota geral e carrossel de cards."""
+    photos = f"{root}{PHOTO_DIR}/"
+    short = {u["slug"]: u["short"] for u in UNITS}
+    stars = ('<span class="stars" role="img" aria-label="5 estrelas">'
+             + '<svg aria-hidden="true"><use href="#i-star"/></svg>' * 5 + '</span>')
+    colors = ["#005094", "#062B52", "#0A7FB8", "#1F7A5C"]  # fundo do círculo com a inicial
+    cards = []
+    for i, r in enumerate(REVIEWS):
+        img = ""
+        if r.get("photo"):
+            img = (f'<img class="rv-photo" src="{photos}{r["photo"]}.webp" alt="Ar-condicionado instalado pela Zayin, '
+                   f'foto postada por {esc(r["name"])} na avaliação" loading="lazy" width="600" height="800">')
+        cards.append(f'''<article class="rv-card{" has-photo" if img else ""}">
+          {img}<div class="rv-body">
+            {stars}
+            <p class="rv-text">{esc(r["text"])}</p>
+            <div class="rv-who"><span class="rv-av" style="--c:{colors[i % len(colors)]}" aria-hidden="true">{esc(r["name"][0])}</span><div><b>{esc(r["name"])}</b><small>Unidade {esc(short[r["unit"]])}</small></div></div>
+          </div>
+        </article>''')
+    cards_html = "\n        ".join(cards)
+    return f'''<div class="rv" data-reveal>
+      <div class="rv-head">
+        <span class="rv-g">{GOOGLE_G}</span>
+        <span class="rv-score"><b>{g_rating}</b>{stars}</span>
+        <span class="rv-count">{g_reviews} avaliações<br>no Google</span>
+      </div>
+      <div class="rv-track" tabindex="0" role="region" aria-label="Avaliações de clientes no Google">
+        {cards_html}
+      </div>
+      <div class="rv-foot">
+        <div class="rv-nav">
+          <button class="rv-prev" type="button" aria-label="Avaliação anterior"><svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+          <button class="rv-next" type="button" aria-label="Próxima avaliação"><svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+        </div>
+        <a class="rv-all" href="{esc(UNITS[0]["gmaps"])}" target="_blank" rel="noopener">Ver todas no Google<svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      </div>
+    </div>'''
 
 
 def unit_cards(cur, msg_city):
@@ -413,6 +497,7 @@ def build_page(city, kind, css, js, logo, logo_w, brands, root_prefix=None):
         "{{LOC_CLASS}}": " is-map-only" if is_home else "",
         "{{G_RATING}}": g_rating,
         "{{G_REVIEWS}}": str(g_reviews),
+        "{{REVIEWS}}": reviews_html(root, g_rating, g_reviews),
         "{{PHOTOS}}": f"{root}{PHOTO_DIR}/",
         "{{PRELOAD}}": preload,
         "{{CITY_OPTIONS}}": city_options,

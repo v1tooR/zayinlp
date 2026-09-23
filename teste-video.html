@@ -892,17 +892,15 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
    ========================================================= */
 .warranty { background: var(--ice); }
 .w-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(28px, 5vw, 72px); align-items: center; }
-.w-photo { position: relative; border-radius: var(--r-xl); overflow: hidden; aspect-ratio: 4 / 5; background: linear-gradient(160deg, #4BA3DD, #EAF3FB 70%); }
-.w-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.w-photo .stamp, .si-photo .stamp, .about-photo .stamp {
+.si-photo .stamp, .about-photo .stamp {
   position: absolute; left: 20px; bottom: 20px; right: 20px;
   display: flex; align-items: center; gap: 14px;
   padding: 14px 18px; border-radius: 18px; background: rgba(255, 255, 255, .94);
   backdrop-filter: blur(8px);
 }
-.w-photo .stamp svg, .si-photo .stamp svg, .about-photo .stamp svg { width: 40px; height: 40px; color: var(--blue); flex: none; }
-.w-photo .stamp b, .si-photo .stamp b, .about-photo .stamp b { display: block; color: var(--duct); font-size: 16px; line-height: 1.25; }
-.w-photo .stamp span, .si-photo .stamp span, .about-photo .stamp span { font-size: 14px; color: var(--muted); }
+.si-photo .stamp svg, .about-photo .stamp svg { width: 40px; height: 40px; color: var(--blue); flex: none; }
+.si-photo .stamp b, .about-photo .stamp b { display: block; color: var(--duct); font-size: 16px; line-height: 1.25; }
+.si-photo .stamp span, .about-photo .stamp span { font-size: 14px; color: var(--muted); }
 .scale { margin-top: 32px; }
 .scale-axis { display: flex; justify-content: space-between; margin-left: 170px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
 .w-row { display: grid; grid-template-columns: 170px 1fr; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--line); }
@@ -935,12 +933,60 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
 .w-service div span { display: block; margin-top: 2px; font-size: 14.5px; line-height: 1.4; color: var(--muted); }
 .scale-title { margin: 0 0 12px; font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--blue); }
 
+/* avaliações do Google no lugar da foto: nota geral e carrossel de cards (com a foto que o cliente postou) */
+.rv { min-width: 0; }
+.rv .stars { display: inline-flex; gap: 1px; color: #F5B400; }
+.rv .stars svg { width: 15px; height: 15px; }
+.rv-head { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-radius: 20px; background: var(--frost); }
+.rv-g { width: 44px; height: 44px; border-radius: 13px; background: #fff; display: grid; place-items: center; flex: none; box-shadow: inset 0 0 0 1px var(--line); }
+.rv-g svg { width: 22px; height: 22px; }
+.rv-score { display: flex; flex-direction: column; gap: 3px; }
+.rv-score b { font-size: 28px; font-weight: 820; font-style: italic; line-height: 1; color: var(--duct); }
+.rv-count { margin-left: auto; font-size: 14px; line-height: 1.35; text-align: right; color: var(--muted); }
+.rv-track {
+  display: flex; align-items: stretch; gap: 14px; margin-top: 14px;
+  overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
+  scrollbar-width: none; padding: 2px 2px 4px;
+}
+.rv-track::-webkit-scrollbar { display: none; }
+.rv-track:focus-visible { outline-offset: 2px; }
+.rv-card { flex: 0 0 min(272px, 80%); scroll-snap-align: start; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; background: var(--frost); }
+.rv-photo { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; }
+.rv-body { flex: 1; display: flex; flex-direction: column; gap: 10px; padding: 16px 18px 18px; }
+.rv-text {
+  font-size: 15px; line-height: 1.5; color: var(--ink);
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; line-clamp: 4; overflow: hidden;
+}
+.rv-card:not(.has-photo) .rv-body::before { content: "\201C"; margin: 8px 0 -14px; font-size: 64px; font-weight: 820; line-height: .8; color: var(--flow); }
+.rv-card:not(.has-photo) .rv-text { font-size: 17px; -webkit-line-clamp: 9; line-clamp: 9; }
+.rv-text.is-open { display: block; -webkit-line-clamp: unset; line-clamp: none; }
+.rv-more { align-self: flex-start; margin-top: -4px; padding: 0; border: 0; background: none; font: inherit; font-size: 14px; font-weight: 650; color: var(--blue); cursor: pointer; }
+.rv-more:hover { text-decoration: underline; text-underline-offset: 3px; }
+.rv-who { margin-top: auto; display: flex; align-items: center; gap: 10px; padding-top: 4px; }
+.rv-av { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--c); color: #fff; font-size: 15px; font-weight: 700; }
+.rv-who b { display: block; font-size: 14.5px; line-height: 1.2; color: var(--duct); }
+.rv-who small { display: block; font-size: 12.5px; color: var(--muted); }
+.rv-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; }
+.rv-nav { display: flex; gap: 8px; }
+.rv-nav button {
+  width: 42px; height: 42px; border: 0; border-radius: 50%; cursor: pointer;
+  display: grid; place-items: center; background: #fff; color: var(--duct);
+  box-shadow: inset 0 0 0 1.5px var(--line-strong); transition: box-shadow .2s ease, opacity .2s ease;
+}
+.rv-nav button:hover:not(:disabled) { box-shadow: inset 0 0 0 1.5px var(--blue); color: var(--blue); }
+.rv-nav button:disabled { opacity: .35; cursor: default; }
+.rv-nav svg { width: 18px; height: 18px; }
+.rv-prev svg { transform: rotate(180deg); }
+.rv-all { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 650; color: var(--blue); text-decoration: none; }
+.rv-all:hover { text-decoration: underline; text-underline-offset: 3px; }
+.rv-all svg { width: 16px; height: 16px; }
+
 @media (max-width: 900px) {
   .w-grid { grid-template-columns: 1fr; }
-  .w-photo .stamp, .si-photo .stamp, .about-photo .stamp { left: 12px; right: auto; bottom: 12px; max-width: calc(100% - 24px); padding: 10px 14px; }
-  .w-photo .stamp svg, .si-photo .stamp svg, .about-photo .stamp svg { width: 30px; height: 30px; }
-  .w-photo img { object-position: 50% 62%; }
-  .w-photo { aspect-ratio: 16 / 10; }
+  .si-photo .stamp, .about-photo .stamp { left: 12px; right: auto; bottom: 12px; max-width: calc(100% - 24px); padding: 10px 14px; }
+  .si-photo .stamp svg, .about-photo .stamp svg { width: 30px; height: 30px; }
+  /* celular: os cards encostam na borda da tela para mostrar que dá para arrastar */
+  .rv-track { margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter); scroll-padding-inline: var(--gutter); }
 }
 @media (max-width: 560px) {
   .scale-axis { margin-left: 0; }
@@ -1522,10 +1568,6 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
   <div class="wrap si-grid">
     <figure class="si-photo" data-reveal="clip" style="margin:0">
       <img src="dist/img/fotos/unidade-jacarei-1100.webp" srcset="dist/img/fotos/unidade-jacarei-700.webp 700w, dist/img/fotos/unidade-jacarei-1100.webp 1100w" sizes="(max-width: 900px) 92vw, 480px" alt="Picape e equipe da Zayin em frente ao Espaço Ventura, onde fica a unidade de Jacareí" loading="lazy" width="1100" height="1143">
-      <figcaption class="stamp">
-        <svg aria-hidden="true"><use href="#i-shield"/></svg>
-        <div><b>Garantia de serviço</b><span>Instalação dentro da norma técnica</span></div>
-      </figcaption>
     </figure>
     <div class="si-body">
       <div data-reveal>
@@ -1550,13 +1592,92 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
 <!-- ============ GARANTIA ============ -->
 <section class="section warranty" id="garantia">
   <div class="wrap w-grid">
-    <figure class="w-photo" data-reveal="clip" style="margin:0">
-      <img src="https://images.pexels.com/photos/16600100/pexels-photo-16600100.jpeg?auto=compress&cs=tinysrgb&w=1000" alt="Condensadora de ar-condicionado instalada no alto de um prédio, com céu azul ao fundo" loading="lazy" width="1000" height="1500">
-      <figcaption class="stamp">
-        <svg aria-hidden="true"><use href="#i-shield"/></svg>
-        <div><b>Serviço dentro da norma técnica</b><span>Equipe técnica qualificada</span></div>
-      </figcaption>
-    </figure>
+    <div class="rv" data-reveal>
+      <div class="rv-head">
+        <span class="rv-g"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.98-3.09z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.98 3.09c.95-2.85 3.6-4.96 6.73-4.96z"/></svg></span>
+        <span class="rv-score"><b>5,0</b><span class="stars" role="img" aria-label="5 estrelas"><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg></span></span>
+        <span class="rv-count">61 avaliações<br>no Google</span>
+      </div>
+      <div class="rv-track" tabindex="0" role="region" aria-label="Avaliações de clientes no Google">
+        <article class="rv-card has-photo">
+          <img class="rv-photo" src="dist/img/fotos/cliente-tatiane.webp" alt="Ar-condicionado instalado pela Zayin, foto postada por Tatiane K. na avaliação" loading="lazy" width="600" height="800"><div class="rv-body">
+            <span class="stars" role="img" aria-label="5 estrelas"><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg></span>
+            <p class="rv-text">Escolhi a Zayin ao acaso pelo Google, e tomei como base as avaliações dos clientes anteriores, portanto gostaria de deixar a minha opinião após o serviço executado. Primeiramente gostaria de falar do atendimento e atenção ao cliente, o Lucas foi meu primeiro contato e agradeço pela disposição em me atender com atenção. Os meninos que vieram para a instalação uma simpatia também, preço justo, cumprem o prazo e testam cada aparelho antes de finalizarem o serviço. Estão de parabéns e super indico</p>
+            <div class="rv-who"><span class="rv-av" style="--c:#005094" aria-hidden="true">T</span><div><b>Tatiane K.</b><small>Unidade SJC</small></div></div>
+          </div>
+        </article>
+        <article class="rv-card has-photo">
+          <img class="rv-photo" src="dist/img/fotos/cliente-hisashi.webp" alt="Ar-condicionado instalado pela Zayin, foto postada por Hisashi H. na avaliação" loading="lazy" width="600" height="800"><div class="rv-body">
+            <span class="stars" role="img" aria-label="5 estrelas"><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg></span>
+            <p class="rv-text">A instalação foi feita com bastante atenção pelo técnico, o valor também estáva dentro do esperado, material de cobre, eu tive uma boa experiência com a empresa.</p>
+            <div class="rv-who"><span class="rv-av" style="--c:#062B52" aria-hidden="true">H</span><div><b>Hisashi H.</b><small>Unidade SJC</small></div></div>
+          </div>
+        </article>
+        <article class="rv-card">
+          <div class="rv-body">
+            <span class="stars" role="img" aria-label="5 estrelas"><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg></span>
+            <p class="rv-text">Instalaram meu ar-condicionado e ficou muito bom. Fizeram um serviço bem caprichado e organizado. Testaram tudo na hora e explicaram o funcionamento. Até agora está funcionando perfeito. Recomendo.</p>
+            <div class="rv-who"><span class="rv-av" style="--c:#0A7FB8" aria-hidden="true">C</span><div><b>Clarisson O.</b><small>Unidade SJC</small></div></div>
+          </div>
+        </article>
+        <article class="rv-card has-photo">
+          <img class="rv-photo" src="dist/img/fotos/cliente-ricardo.webp" alt="Ar-condicionado instalado pela Zayin, foto postada por Ricardo S. na avaliação" loading="lazy" width="600" height="800"><div class="rv-body">
+            <span class="stars" role="img" aria-label="5 estrelas"><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg></span>
+            <p class="rv-text">Excelente atendimento e mão de obra especializada, very good!</p>
+            <div class="rv-who"><span class="rv-av" style="--c:#1F7A5C" aria-hidden="true">R</span><div><b>Ricardo S.</b><small>Unidade Jacareí</small></div></div>
+          </div>
+        </article>
+        <article class="rv-card has-photo">
+          <img class="rv-photo" src="dist/img/fotos/cliente-cleusa.webp" alt="Ar-condicionado instalado pela Zayin, foto postada por Cleusa G. na avaliação" loading="lazy" width="600" height="800"><div class="rv-body">
+            <span class="stars" role="img" aria-label="5 estrelas"><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg></span>
+            <p class="rv-text">Desde o início, só alegria. Empresa: organizada, profissional, responde rapidinho, muito foco no cliente. Instalação: nota 10. Colaboradores eficientes, prazo bem rápido, pessoal bastante conhecedor do assunto. Nota 10.</p>
+            <div class="rv-who"><span class="rv-av" style="--c:#005094" aria-hidden="true">C</span><div><b>Cleusa G.</b><small>Unidade SJC</small></div></div>
+          </div>
+        </article>
+        <article class="rv-card">
+          <div class="rv-body">
+            <span class="stars" role="img" aria-label="5 estrelas"><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg></span>
+            <p class="rv-text">Escolhi eles devido a nota no Google e nao me arrepender. Foram extremamente atenciosos entendendo o que queria e produzeram e executaram um excelente serviço. Super bem feito e no capricho.</p>
+            <div class="rv-who"><span class="rv-av" style="--c:#062B52" aria-hidden="true">R</span><div><b>Rafael B.</b><small>Unidade SJC</small></div></div>
+          </div>
+        </article>
+        <article class="rv-card has-photo">
+          <img class="rv-photo" src="dist/img/fotos/cliente-osvaldo.webp" alt="Ar-condicionado instalado pela Zayin, foto postada por Osvaldo J. na avaliação" loading="lazy" width="600" height="800"><div class="rv-body">
+            <span class="stars" role="img" aria-label="5 estrelas"><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg></span>
+            <p class="rv-text">Ótimo serviço, instalação muito bem feita, pontuais.</p>
+            <div class="rv-who"><span class="rv-av" style="--c:#0A7FB8" aria-hidden="true">O</span><div><b>Osvaldo J.</b><small>Unidade SJC</small></div></div>
+          </div>
+        </article>
+        <article class="rv-card">
+          <div class="rv-body">
+            <span class="stars" role="img" aria-label="5 estrelas"><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg></span>
+            <p class="rv-text">Empresa de confiança, preco justo e qualidade. Instalaram 4 ar na minha casa, recomendadissimo!</p>
+            <div class="rv-who"><span class="rv-av" style="--c:#1F7A5C" aria-hidden="true">L</span><div><b>Leonardo R.</b><small>Unidade Jacareí</small></div></div>
+          </div>
+        </article>
+        <article class="rv-card has-photo">
+          <img class="rv-photo" src="dist/img/fotos/cliente-taislane.webp" alt="Ar-condicionado instalado pela Zayin, foto postada por Taislane S. na avaliação" loading="lazy" width="600" height="800"><div class="rv-body">
+            <span class="stars" role="img" aria-label="5 estrelas"><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg></span>
+            <p class="rv-text">O Lucas é muito atencioso e educado! Fez a instalação do meu ar condicionado e ficou ótimo! Super recomendo o serviço!</p>
+            <div class="rv-who"><span class="rv-av" style="--c:#005094" aria-hidden="true">T</span><div><b>Taislane S.</b><small>Unidade SJC</small></div></div>
+          </div>
+        </article>
+        <article class="rv-card">
+          <div class="rv-body">
+            <span class="stars" role="img" aria-label="5 estrelas"><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg></span>
+            <p class="rv-text">Ótimos profissionais , deixa o local limpo e ótimo preço</p>
+            <div class="rv-who"><span class="rv-av" style="--c:#062B52" aria-hidden="true">A</span><div><b>Adriano A.</b><small>Unidade Jacareí</small></div></div>
+          </div>
+        </article>
+      </div>
+      <div class="rv-foot">
+        <div class="rv-nav">
+          <button class="rv-prev" type="button" aria-label="Avaliação anterior"><svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+          <button class="rv-next" type="button" aria-label="Próxima avaliação"><svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+        </div>
+        <a class="rv-all" href="https://www.google.com/maps/search/?api=1&amp;query=Zayin+ar+condicionado+instala%C3%A7%C3%A3o+manuten%C3%A7%C3%A3o+venda+e+projetos&amp;query_place_id=ChIJrbxfjAdLzJQRSSlSiRFEZSE" target="_blank" rel="noopener">Ver todas no Google<svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      </div>
+    </div>
     <div>
       <div data-reveal>
         <p class="eyebrow">Garantia</p>
@@ -2244,6 +2365,32 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
     };
     perkGrid.addEventListener('scroll', () => requestAnimationFrame(syncDots), { passive: true });
   }
+
+  /* avaliações do Google: setas passam de card em card; texto longo ganha "Ler mais" */
+  $$('.rv').forEach(rv => {
+    const track = $('.rv-track', rv);
+    const prev = $('.rv-prev', rv), next = $('.rv-next', rv);
+    const step = () => {
+      const card = $('.rv-card', track);
+      return card ? card.getBoundingClientRect().width + parseFloat(getComputedStyle(track).columnGap || 0) : track.clientWidth;
+    };
+    const sync = () => {
+      prev.disabled = track.scrollLeft <= 2;
+      next.disabled = track.scrollLeft >= track.scrollWidth - track.clientWidth - 2;
+    };
+    prev.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: reduce ? 'auto' : 'smooth' }));
+    next.addEventListener('click', () => track.scrollBy({ left: step(), behavior: reduce ? 'auto' : 'smooth' }));
+    track.addEventListener('scroll', () => requestAnimationFrame(sync), { passive: true });
+    addEventListener('resize', sync);
+    sync();
+    $$('.rv-text', rv).forEach(p => {
+      if (p.scrollHeight - p.clientHeight < 4) return;
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'rv-more'; b.textContent = 'Ler mais';
+      b.addEventListener('click', () => { b.textContent = p.classList.toggle('is-open') ? 'Ler menos' : 'Ler mais'; });
+      p.after(b);
+    });
+  });
 
   /* ---------------------------------------------------------
      Mapa das unidades. Sem cidade na página mostra todas; com cidade, mostra a de lá.
