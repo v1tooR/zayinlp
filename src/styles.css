@@ -879,7 +879,7 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
 .w-photo .stamp svg, .si-photo .stamp svg, .about-photo .stamp svg { width: 40px; height: 40px; color: var(--blue); flex: none; }
 .w-photo .stamp b, .si-photo .stamp b, .about-photo .stamp b { display: block; color: var(--duct); font-size: 16px; line-height: 1.25; }
 .w-photo .stamp span, .si-photo .stamp span, .about-photo .stamp span { font-size: 14px; color: var(--muted); }
-.scale { margin-top: 36px; }
+.scale { margin-top: 32px; }
 .scale-axis { display: flex; justify-content: space-between; margin-left: 170px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
 .w-row { display: grid; grid-template-columns: 170px 1fr; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--line); }
 .w-row dt { font-weight: 700; color: var(--duct); line-height: 1.25; padding-right: 12px; }
@@ -904,6 +904,12 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
 .w-row.is-in .w-val { opacity: 1; }
 .w-row.full .w-val { left: auto; right: 14px; color: #fff; }
 .w-foot { margin-top: 16px; font-size: 14px; color: var(--muted); }
+.w-service { margin-top: 28px; display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 18px; background: #fff; box-shadow: inset 0 0 0 1px var(--line); }
+.w-service .ico { width: 44px; height: 44px; border-radius: 12px; background: #E1EEF9; color: var(--blue); display: grid; place-items: center; flex: none; }
+.w-service .ico svg { width: 24px; height: 24px; }
+.w-service b { display: block; font-weight: 700; line-height: 1.25; color: var(--duct); }
+.w-service div span { display: block; margin-top: 2px; font-size: 14.5px; line-height: 1.4; color: var(--muted); }
+.scale-title { margin: 0 0 12px; font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--blue); }
 
 @media (max-width: 900px) {
   .w-grid { grid-template-columns: 1fr; }
@@ -1097,39 +1103,28 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
 @media (max-width: 900px) { .f-grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 520px) { .f-grid { grid-template-columns: 1fr; } }
 
-/* WhatsApp flutuante + barra mobile */
+/* WhatsApp flutuante: sempre à mão no canto da tela, do jeito que as pessoas já esperam */
 .wa-float {
-  position: fixed; right: 20px; bottom: 20px; z-index: 40;
+  position: fixed; right: 20px; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 40;
   width: 60px; height: 60px; border-radius: 50%;
   background: var(--wa); color: #fff; display: grid; place-items: center;
   box-shadow: 0 12px 28px -8px rgba(31, 175, 91, .6);
-  transform: scale(0); transition: transform .5s var(--ease-out);
+  animation: wa-in .5s var(--ease-out) .6s both;
+  transition: background .2s ease;
 }
-.wa-float.is-shown { transform: scale(1); }
 .wa-float:hover { background: var(--wa-deep); }
 .wa-float svg { width: 30px; height: 30px; }
 .wa-float::after {
   content: ""; position: absolute; inset: 0; border-radius: 50%;
   box-shadow: 0 0 0 0 rgba(31, 175, 91, .5);
-  animation: ring 2.8s ease-out 3;
+  animation: ring 2.8s ease-out 1.2s 3;
 }
+@keyframes wa-in { from { transform: scale(0); } }
 @keyframes ring { 0% { box-shadow: 0 0 0 0 rgba(31, 175, 91, .45); } 70%, 100% { box-shadow: 0 0 0 18px rgba(31, 175, 91, 0); } }
 
-.mbar { display: none; }
 @media (max-width: 720px) {
-  .wa-float { display: none; }
-  .mbar {
-    position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 40;
-    display: grid; grid-template-columns: 1fr 1.3fr; gap: 8px;
-    padding: 8px; border-radius: 20px;
-    background: rgba(6, 43, 82, .94); backdrop-filter: blur(10px);
-    box-shadow: 0 16px 32px -12px rgba(6, 43, 82, .5);
-    transform: translateY(140%); transition: transform .5s var(--ease-out);
-  }
-  .mbar.is-shown { transform: none; }
-  .mbar .btn { min-height: 46px; font-size: 15px; padding: 0 12px; }
-  .mbar .btn-ghost { --fg: #fff; box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .3); }
-  .footer { padding-bottom: 100px; }
+  .wa-float { right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); width: 58px; height: 58px; }
+  .footer { padding-bottom: 96px; }
 }
 
 /* =========================================================

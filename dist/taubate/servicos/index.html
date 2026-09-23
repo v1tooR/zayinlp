@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Instalação de Ar-Condicionado em Taubaté com Garantia | Zayin</title>
-<meta name="description" content="Instalação de ar-condicionado em Taubaté com 6 meses de garantia no serviço. Manutenção, higienização e infraestrutura para obra. Orçamento pelo WhatsApp.">
+<meta name="description" content="Instalação de ar-condicionado em Taubaté com garantia de serviço. Manutenção, higienização e infraestrutura para obra. Orçamento pelo WhatsApp.">
 <link rel="canonical" href="https://zayinarcondicionado.com/taubate/servicos/">
 <meta name="theme-color" content="#005094">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="pt_BR">
 <meta property="og:site_name" content="Zayin Ar Condicionado">
 <meta property="og:title" content="Instalação de Ar-Condicionado em Taubaté com Garantia | Zayin">
-<meta property="og:description" content="Instalação de ar-condicionado em Taubaté com 6 meses de garantia no serviço. Manutenção, higienização e infraestrutura para obra. Orçamento pelo WhatsApp.">
+<meta property="og:description" content="Instalação de ar-condicionado em Taubaté com garantia de serviço. Manutenção, higienização e infraestrutura para obra. Orçamento pelo WhatsApp.">
 <meta property="og:url" content="https://zayinarcondicionado.com/taubate/servicos/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23005094'/%3E%3Cg stroke='white' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M16 6v20M7.3 11l17.4 10M7.3 21l17.4-10'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -902,7 +902,7 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
 .w-photo .stamp svg, .si-photo .stamp svg, .about-photo .stamp svg { width: 40px; height: 40px; color: var(--blue); flex: none; }
 .w-photo .stamp b, .si-photo .stamp b, .about-photo .stamp b { display: block; color: var(--duct); font-size: 16px; line-height: 1.25; }
 .w-photo .stamp span, .si-photo .stamp span, .about-photo .stamp span { font-size: 14px; color: var(--muted); }
-.scale { margin-top: 36px; }
+.scale { margin-top: 32px; }
 .scale-axis { display: flex; justify-content: space-between; margin-left: 170px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
 .w-row { display: grid; grid-template-columns: 170px 1fr; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--line); }
 .w-row dt { font-weight: 700; color: var(--duct); line-height: 1.25; padding-right: 12px; }
@@ -927,6 +927,12 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
 .w-row.is-in .w-val { opacity: 1; }
 .w-row.full .w-val { left: auto; right: 14px; color: #fff; }
 .w-foot { margin-top: 16px; font-size: 14px; color: var(--muted); }
+.w-service { margin-top: 28px; display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 18px; background: #fff; box-shadow: inset 0 0 0 1px var(--line); }
+.w-service .ico { width: 44px; height: 44px; border-radius: 12px; background: #E1EEF9; color: var(--blue); display: grid; place-items: center; flex: none; }
+.w-service .ico svg { width: 24px; height: 24px; }
+.w-service b { display: block; font-weight: 700; line-height: 1.25; color: var(--duct); }
+.w-service div span { display: block; margin-top: 2px; font-size: 14.5px; line-height: 1.4; color: var(--muted); }
+.scale-title { margin: 0 0 12px; font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--blue); }
 
 @media (max-width: 900px) {
   .w-grid { grid-template-columns: 1fr; }
@@ -1120,39 +1126,28 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
 @media (max-width: 900px) { .f-grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 520px) { .f-grid { grid-template-columns: 1fr; } }
 
-/* WhatsApp flutuante + barra mobile */
+/* WhatsApp flutuante: sempre à mão no canto da tela, do jeito que as pessoas já esperam */
 .wa-float {
-  position: fixed; right: 20px; bottom: 20px; z-index: 40;
+  position: fixed; right: 20px; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 40;
   width: 60px; height: 60px; border-radius: 50%;
   background: var(--wa); color: #fff; display: grid; place-items: center;
   box-shadow: 0 12px 28px -8px rgba(31, 175, 91, .6);
-  transform: scale(0); transition: transform .5s var(--ease-out);
+  animation: wa-in .5s var(--ease-out) .6s both;
+  transition: background .2s ease;
 }
-.wa-float.is-shown { transform: scale(1); }
 .wa-float:hover { background: var(--wa-deep); }
 .wa-float svg { width: 30px; height: 30px; }
 .wa-float::after {
   content: ""; position: absolute; inset: 0; border-radius: 50%;
   box-shadow: 0 0 0 0 rgba(31, 175, 91, .5);
-  animation: ring 2.8s ease-out 3;
+  animation: ring 2.8s ease-out 1.2s 3;
 }
+@keyframes wa-in { from { transform: scale(0); } }
 @keyframes ring { 0% { box-shadow: 0 0 0 0 rgba(31, 175, 91, .45); } 70%, 100% { box-shadow: 0 0 0 18px rgba(31, 175, 91, 0); } }
 
-.mbar { display: none; }
 @media (max-width: 720px) {
-  .wa-float { display: none; }
-  .mbar {
-    position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 40;
-    display: grid; grid-template-columns: 1fr 1.3fr; gap: 8px;
-    padding: 8px; border-radius: 20px;
-    background: rgba(6, 43, 82, .94); backdrop-filter: blur(10px);
-    box-shadow: 0 16px 32px -12px rgba(6, 43, 82, .5);
-    transform: translateY(140%); transition: transform .5s var(--ease-out);
-  }
-  .mbar.is-shown { transform: none; }
-  .mbar .btn { min-height: 46px; font-size: 15px; padding: 0 12px; }
-  .mbar .btn-ghost { --fg: #fff; box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .3); }
-  .footer { padding-bottom: 100px; }
+  .wa-float { right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); width: 58px; height: 58px; }
+  .footer { padding-bottom: 96px; }
 }
 
 /* =========================================================
@@ -1174,7 +1169,7 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
 }
 
 </style>
-<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "HVACBusiness", "name": "Zayin Ar Condicionado", "url": "https://zayinarcondicionado.com/taubate/servicos/", "telephone": "+55 12 99706-7659", "description": "Instalação de ar-condicionado em Taubaté com 6 meses de garantia no serviço. Manutenção, higienização e infraestrutura para obra. Orçamento pelo WhatsApp.", "slogan": "Autorizado a venda, instalação com garantia.", "areaServed": ["Mogi das Cruzes", "Jacareí", "São José dos Campos", "Caçapava", "Taubaté", "Pindamonhangaba", "Litoral Norte"], "brand": [{"@type": "Brand", "name": "Samsung"}, {"@type": "Brand", "name": "LG"}, {"@type": "Brand", "name": "Midea"}, {"@type": "Brand", "name": "Elgin"}, {"@type": "Brand", "name": "Gree"}, {"@type": "Brand", "name": "Daikin"}], "sameAs": ["https://www.instagram.com/zayinarcondicionado/"], "department": [{"@type": "HVACBusiness", "name": "Zayin Ar Condicionado São José dos Campos", "telephone": "+55 12 99706-7659", "address": {"@type": "PostalAddress", "streetAddress": "R. Mario Campos", "addressLocality": "São José dos Campos", "addressRegion": "SP", "postalCode": "12221-750", "addressCountry": "BR"}, "geo": {"@type": "GeoCoordinates", "latitude": -23.1669442, "longitude": -45.8357906}, "hasMap": "https://www.google.com/maps/search/?api=1&query=Zayin+ar+condicionado+instala%C3%A7%C3%A3o+manuten%C3%A7%C3%A3o+venda+e+projetos&query_place_id=ChIJrbxfjAdLzJQRSSlSiRFEZSE"}, {"@type": "HVACBusiness", "name": "Zayin Ar Condicionado Jacareí", "telephone": "+55 12 99201-9832", "address": {"@type": "PostalAddress", "streetAddress": "R. Enéas de Mesquita, 145, sala 01 - Jardim Mesquita", "addressLocality": "Jacareí", "addressRegion": "SP", "postalCode": "12327-690", "addressCountry": "BR"}, "geo": {"@type": "GeoCoordinates", "latitude": -23.2998325, "longitude": -45.9664184}, "hasMap": "https://www.google.com/maps/search/?api=1&query=Zayin+Ar+Condicionado+Instala%C3%A7%C3%A3o+Venda+e+Projetos+%28Jacare%C3%AD%29&query_place_id=ChIJWQqN3DbLzZQRca5MLfaHHE8"}], "hasOfferCatalog": {"@type": "OfferCatalog", "name": "Serviços de ar-condicionado", "itemListElement": [{"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Instalação de ar-condicionado"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Manutenção preventiva"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Higienização de ar-condicionado"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Infraestrutura para ar-condicionado em obra"}}]}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Início", "item": "https://zayinarcondicionado.com/taubate/"}, {"@type": "ListItem", "position": 2, "name": "Serviços", "item": "https://zayinarcondicionado.com/taubate/servicos/"}]}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "HVACBusiness", "name": "Zayin Ar Condicionado", "url": "https://zayinarcondicionado.com/taubate/servicos/", "telephone": "+55 12 99706-7659", "description": "Instalação de ar-condicionado em Taubaté com garantia de serviço. Manutenção, higienização e infraestrutura para obra. Orçamento pelo WhatsApp.", "slogan": "Autorizado a venda, instalação com garantia.", "areaServed": ["Mogi das Cruzes", "Jacareí", "São José dos Campos", "Caçapava", "Taubaté", "Pindamonhangaba", "Litoral Norte"], "brand": [{"@type": "Brand", "name": "Samsung"}, {"@type": "Brand", "name": "LG"}, {"@type": "Brand", "name": "Midea"}, {"@type": "Brand", "name": "Elgin"}, {"@type": "Brand", "name": "Gree"}, {"@type": "Brand", "name": "Daikin"}], "sameAs": ["https://www.instagram.com/zayinarcondicionado/"], "department": [{"@type": "HVACBusiness", "name": "Zayin Ar Condicionado São José dos Campos", "telephone": "+55 12 99706-7659", "address": {"@type": "PostalAddress", "streetAddress": "R. Mario Campos", "addressLocality": "São José dos Campos", "addressRegion": "SP", "postalCode": "12221-750", "addressCountry": "BR"}, "geo": {"@type": "GeoCoordinates", "latitude": -23.1669442, "longitude": -45.8357906}, "hasMap": "https://www.google.com/maps/search/?api=1&query=Zayin+ar+condicionado+instala%C3%A7%C3%A3o+manuten%C3%A7%C3%A3o+venda+e+projetos&query_place_id=ChIJrbxfjAdLzJQRSSlSiRFEZSE"}, {"@type": "HVACBusiness", "name": "Zayin Ar Condicionado Jacareí", "telephone": "+55 12 99201-9832", "address": {"@type": "PostalAddress", "streetAddress": "R. Enéas de Mesquita, 145, sala 01 - Jardim Mesquita", "addressLocality": "Jacareí", "addressRegion": "SP", "postalCode": "12327-690", "addressCountry": "BR"}, "geo": {"@type": "GeoCoordinates", "latitude": -23.2998325, "longitude": -45.9664184}, "hasMap": "https://www.google.com/maps/search/?api=1&query=Zayin+Ar+Condicionado+Instala%C3%A7%C3%A3o+Venda+e+Projetos+%28Jacare%C3%AD%29&query_place_id=ChIJWQqN3DbLzZQRca5MLfaHHE8"}], "hasOfferCatalog": {"@type": "OfferCatalog", "name": "Serviços de ar-condicionado", "itemListElement": [{"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Instalação de ar-condicionado"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Manutenção preventiva"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Higienização de ar-condicionado"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Infraestrutura para ar-condicionado em obra"}}]}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Início", "item": "https://zayinarcondicionado.com/taubate/"}, {"@type": "ListItem", "position": 2, "name": "Serviços", "item": "https://zayinarcondicionado.com/taubate/servicos/"}]}]}</script>
 </head>
 <body class="page-servicos">
 <a class="skip" href="#conteudo">Pular para o conteúdo</a>
@@ -1291,7 +1286,7 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
         <span class="ln"><span style="--d:.28s">com garantia</span></span>
         <span class="ln accent"><span style="--d:.36s">em Taubaté</span></span>
       </h1>
-      <p class="lede" data-in style="--d:.5s">Comprou o aparelho pela internet? A Zayin instala dentro da norma técnica, com 6 meses de garantia no serviço. Ainda não comprou? Somos revenda autorizada e entregamos instalado.</p>
+      <p class="lede" data-in style="--d:.5s">Comprou o aparelho pela internet? A Zayin instala dentro da norma técnica, com garantia de serviço. Ainda não comprou? Somos revenda autorizada e entregamos instalado.</p>
       <div class="hero-ctas" data-in style="--d:.62s">
         <a class="btn btn-wa magnetic" data-wa="Olá, vim do seu site e quero um orçamento de instalação de ar-condicionado. Estou em Taubaté." href="#">
           <svg aria-hidden="true"><use href="#i-wa"/></svg>Pedir orçamento de instalação
@@ -1308,7 +1303,7 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
       <img src="../../img/fotos/tecnico-condensadora-1200.webp" srcset="../../img/fotos/tecnico-condensadora-700.webp 700w, ../../img/fotos/tecnico-condensadora-1200.webp 1200w" sizes="(max-width: 900px) 92vw, 580px" alt="Técnico da Zayin fazendo a ligação da condensadora na sacada de um apartamento, com o manifold de pressão ao lado" width="1200" height="1200" fetchpriority="high">
       <figcaption class="hm-badge">
         <span class="ico"><svg aria-hidden="true"><use href="#i-shield"/></svg></span>
-        <div><b>6 meses de garantia</b><small>no serviço de instalação</small></div>
+        <div><b>Garantia de serviço</b><small>na instalação</small></div>
       </figcaption>
     </figure>
   </div>
@@ -1333,7 +1328,7 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
         </figcaption>
       </figure>
       <div class="svc-body">
-        <h3>Instalação com garantia de 6 meses</h3>
+        <h3>Instalação com garantia de serviço</h3>
         <p>Do suporte ao teste final, cada etapa segue a norma técnica. Você recebe o aparelho funcionando e com o serviço garantido.</p>
         <ul class="checks">
           <li><svg aria-hidden="true"><use href="#i-check"/></svg><div><b>Avaliação do local</b><span>Definimos a posição das unidades e o caminho da tubulação.</span></div></li>
@@ -1400,7 +1395,7 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
       <ul class="about-stats" data-reveal style="--d:.1s">
         <li><b>5,0<svg aria-hidden="true"><use href="#i-star"/></svg></b><span>nota no Google, com 61 avaliações</span></li>
         <li><b>2</b><span>unidades, em São José dos Campos e Jacareí</span></li>
-        <li><b>6 meses</b><span>de garantia no serviço de instalação</span></li>
+        <li><b>10 anos</b><span>de garantia de fábrica na condensadora</span></li>
       </ul>
       <div class="hero-ctas" data-reveal style="--d:.2s">
         <a class="btn btn-ghost" href="#cidades"><svg aria-hidden="true"><use href="#i-pin"/></svg>Ver unidades no mapa</a>
@@ -1533,15 +1528,19 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
     <div>
       <div data-reveal>
         <p class="eyebrow">Garantia</p>
-        <h2 class="h-section">Garantia com prazo claro</h2>
+        <h2 class="h-section">Garantia no serviço e no aparelho</h2>
         <p class="lede">A Zayin garante o serviço de instalação e trabalha com marcas reconhecidas, com garantia longa nos equipamentos.</p>
       </div>
+      <div class="w-service" data-reveal style="--d:.1s">
+        <span class="ico"><svg aria-hidden="true"><use href="#i-shield"/></svg></span>
+        <div><b>Garantia de serviço na instalação</b><span>Se aparecer algum problema, a Zayin vai até o local e verifica.</span></div>
+      </div>
       <div class="scale">
+        <p class="scale-title">Garantia do fabricante</p>
         <div class="scale-axis" aria-hidden="true"><span>0</span><span>2 anos</span><span>4</span><span>6</span><span>8</span><span>10 anos</span></div>
         <dl style="margin:0">
-          <div class="w-row" style="--w:5%;--d:0s"><dt>Instalação<small>serviço Zayin</small></dt><dd><span class="w-bar"></span><span class="w-val">6 meses</span></dd></div>
-          <div class="w-row" style="--w:20%;--d:.15s"><dt>Evaporadora<small>unidade interna</small></dt><dd><span class="w-bar"></span><span class="w-val">2 anos</span></dd></div>
-          <div class="w-row full" style="--w:100%;--d:.3s"><dt>Condensadora<small>unidade externa</small></dt><dd><span class="w-bar"></span><span class="w-val">10 anos</span></dd></div>
+          <div class="w-row" style="--w:20%;--d:0s"><dt>Evaporadora<small>unidade interna</small></dt><dd><span class="w-bar"></span><span class="w-val">2 anos</span></dd></div>
+          <div class="w-row full" style="--w:100%;--d:.15s"><dt>Condensadora<small>unidade externa</small></dt><dd><span class="w-bar"></span><span class="w-val">10 anos</span></dd></div>
         </dl>
         <p class="w-foot">Prazos dos equipamentos valem para aparelhos vendidos pela Zayin e seguem as condições de cada fabricante.</p>
       </div>
@@ -1626,7 +1625,7 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
     <div class="faq" data-reveal>
       <details><summary>Vocês instalam aparelho comprado em outra loja ou pela internet?<span class="pm"><svg aria-hidden="true"><use href="#i-plus"/></svg></span></summary><div class="ans"><p>Sim. A instalação é o principal serviço da Zayin em Taubaté. Mande pelo WhatsApp a marca, o modelo e a capacidade em BTUs do aparelho, e se possível fotos do local.</p></div></details>
       <details><summary>Posso comprar o aparelho e a instalação juntos?<span class="pm"><svg aria-hidden="true"><use href="#i-plus"/></svg></span></summary><div class="ans"><p>Sim. A Zayin é revenda autorizada: escolha o modelo no catálogo, peça o orçamento com instalação e receba o aparelho instalado, com garantia no serviço e garantia de fábrica no equipamento.</p></div></details>
-      <details><summary>Qual é a garantia da instalação?<span class="pm"><svg aria-hidden="true"><use href="#i-plus"/></svg></span></summary><div class="ans"><p>O serviço de instalação tem 6 meses de garantia.</p><p>Nos aparelhos vendidos pela Zayin, a garantia é de 2 anos na evaporadora e de 10 anos na condensadora, conforme as condições de cada fabricante.</p></div></details>
+      <details><summary>Qual é a garantia da instalação?<span class="pm"><svg aria-hidden="true"><use href="#i-plus"/></svg></span></summary><div class="ans"><p>A instalação tem garantia de serviço: se aparecer algum problema, a Zayin vai até o local e verifica.</p><p>Nos aparelhos vendidos pela Zayin, a garantia é de 2 anos na evaporadora e de 10 anos na condensadora, conforme as condições de cada fabricante.</p></div></details>
       <details><summary>Quanto custa para instalar?<span class="pm"><svg aria-hidden="true"><use href="#i-plus"/></svg></span></summary><div class="ans"><p>O valor depende do tipo de aparelho, da capacidade, da distância entre as unidades e da infraestrutura do local. Envie essas informações pelo WhatsApp e receba o orçamento sem compromisso.</p></div></details>
       <details><summary>Meu imóvel precisa ter infraestrutura pronta?<span class="pm"><svg aria-hidden="true"><use href="#i-plus"/></svg></span></summary><div class="ans"><p>Não. Se o imóvel ainda não tem, a Zayin executa a infraestrutura, com passagem de tubulação e dreno, inclusive durante obra ou reforma.</p></div></details>
       <details><summary>Vocês atendem empresas e comércios?<span class="pm"><svg aria-hidden="true"><use href="#i-plus"/></svg></span></summary><div class="ans"><p>Sim. Instalamos e fazemos manutenção em aparelhos hi-wall, piso teto e cassete para lojas, escritórios, clínicas e outros espaços comerciais.</p></div></details>
@@ -1702,10 +1701,6 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
 </footer>
 
 <a class="wa-float" data-wa="Olá, vim do seu site e quero fazer um orçamento. Estou em Taubaté." href="#" aria-label="Chamar a Zayin no WhatsApp"><svg aria-hidden="true"><use href="#i-wa"/></svg></a>
-<div class="mbar">
-  <a class="btn btn-ghost" href="#orcamento">Montar pedido</a>
-  <a class="btn btn-wa" data-wa="Olá, vim do seu site e quero fazer um orçamento. Estou em Taubaté." href="#"><svg aria-hidden="true"><use href="#i-wa"/></svg>Orçamento</a>
-</div>
 
 <script>window.ZAYIN = {"kind": "servicos", "city": {"slug": "taubate", "name": "Taubaté", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659"}, "cities": [{"slug": "mogidascruzes", "name": "Mogi das Cruzes", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659", "short": "Mogi", "lat": -23.5227, "lng": -46.1883, "unit": "saojosedoscampos", "href": "../../mogidascruzes/servicos/"}, {"slug": "jacarei", "name": "Jacareí", "phone": "5512992019832", "phoneLabel": "(12) 99201-9832", "short": "Jacareí", "lat": -23.3053, "lng": -45.9658, "unit": "jacarei", "href": "../../jacarei/servicos/"}, {"slug": "saojosedoscampos", "name": "São José dos Campos", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659", "short": "SJC", "lat": -23.1896, "lng": -45.8841, "unit": "saojosedoscampos", "href": "../../saojosedoscampos/servicos/"}, {"slug": "cacapava", "name": "Caçapava", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659", "short": "Caçapava", "lat": -23.1017, "lng": -45.7069, "unit": "saojosedoscampos", "href": "../../cacapava/servicos/"}, {"slug": "taubate", "name": "Taubaté", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659", "short": "Taubaté", "lat": -23.0264, "lng": -45.5553, "unit": "saojosedoscampos", "href": "../../taubate/servicos/"}, {"slug": "pindamonhangaba", "name": "Pindamonhangaba", "phone": "5512997067659", "phoneLabel": "(12) 99706-7659", "short": "Pinda", "lat": -22.9246, "lng": -45.4613, "unit": "saojosedoscampos", "href": "../../pindamonhangaba/servicos/"}], "units": [{"slug": "saojosedoscampos", "name": "São José dos Campos", "short": "SJC", "tip": "top", "lat": -23.1669442, "lng": -45.8357906, "gmaps": "https://www.google.com/maps/search/?api=1&query=Zayin+ar+condicionado+instala%C3%A7%C3%A3o+manuten%C3%A7%C3%A3o+venda+e+projetos&query_place_id=ChIJrbxfjAdLzJQRSSlSiRFEZSE"}, {"slug": "jacarei", "name": "Jacareí", "short": "Jacareí", "tip": "left", "lat": -23.2998325, "lng": -45.9664184, "gmaps": "https://www.google.com/maps/search/?api=1&query=Zayin+Ar+Condicionado+Instala%C3%A7%C3%A3o+Venda+e+Projetos+%28Jacare%C3%AD%29&query_place_id=ChIJWQqN3DbLzZQRca5MLfaHHE8"}], "litoral": {"name": "Litoral Norte", "lat": -23.6203, "lng": -45.4131}, "locNotes": {"all": "A Zayin tem base operacional em São José dos Campos e escritório em Jacareí. Escolha uma cidade para ver no mapa.", "mogidascruzes": "Em Mogi das Cruzes, a equipe da Zayin vai até você. O atendimento é pela unidade de São José dos Campos.", "jacarei": "Escritório da Zayin em Jacareí. Endereço, rota e WhatsApp no card.", "saojosedoscampos": "Base operacional da Zayin em São José dos Campos. Endereço, rota e WhatsApp no card.", "cacapava": "Em Caçapava, a equipe da Zayin vai até você. O atendimento é pela unidade de São José dos Campos.", "taubate": "Em Taubaté, a equipe da Zayin vai até você. O atendimento é pela unidade de São José dos Campos.", "pindamonhangaba": "Em Pindamonhangaba, a equipe da Zayin vai até você. O atendimento é pela unidade de São José dos Campos."}, "brands": [{"slug": "samsung", "name": "Samsung", "ratio": 6.543}, {"slug": "lg", "name": "LG", "ratio": 2.268}, {"slug": "midea", "name": "Midea", "ratio": 2.492}, {"slug": "elgin", "name": "Elgin", "ratio": 2.403}, {"slug": "gree", "name": "Gree", "ratio": 5.121}, {"slug": "daikin", "name": "Daikin", "ratio": 4.638}], "imgBase": "../../img/produtos/", "defaultPhone": "5512997067659", "defaultPhoneLabel": "(12) 99706-7659"};</script>
 <script>
@@ -1945,8 +1940,6 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
   const track = $('.band-track');
   const steps = $('.steps');
   const stepItems = $$('.step');
-  const waFloat = $('.wa-float');
-  const mbar = $('.mbar');
   const isVertical = () => matchMedia('(max-width: 860px)').matches;
 
   let ticking = false;
@@ -1973,10 +1966,6 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
         steps.style.setProperty('--p', p.toFixed(3));
         stepItems.forEach((s, i) => s.classList.toggle('is-lit', p >= (i / (stepItems.length - 1)) * 0.97));
       }
-
-      const past = scrollY > vh * 0.55;
-      waFloat.classList.toggle('is-shown', past);
-      mbar.classList.toggle('is-shown', past);
     });
   }
   addEventListener('scroll', onScroll, { passive: true });

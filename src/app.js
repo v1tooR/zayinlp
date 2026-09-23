@@ -234,8 +234,6 @@
   const track = $('.band-track');
   const steps = $('.steps');
   const stepItems = $$('.step');
-  const waFloat = $('.wa-float');
-  const mbar = $('.mbar');
   const isVertical = () => matchMedia('(max-width: 860px)').matches;
 
   let ticking = false;
@@ -262,10 +260,6 @@
         steps.style.setProperty('--p', p.toFixed(3));
         stepItems.forEach((s, i) => s.classList.toggle('is-lit', p >= (i / (stepItems.length - 1)) * 0.97));
       }
-
-      const past = scrollY > vh * 0.55;
-      waFloat.classList.toggle('is-shown', past);
-      mbar.classList.toggle('is-shown', past);
     });
   }
   addEventListener('scroll', onScroll, { passive: true });

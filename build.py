@@ -95,7 +95,7 @@ def faq_items(city, kind):
         ("Vocês instalam aparelho comprado em outra loja ou pela internet?",
          [f"Sim. A instalação é o principal serviço da Zayin {onde}. Mande pelo WhatsApp a marca, o modelo e a capacidade em BTUs do aparelho, e se possível fotos do local."]),
         ("Qual é a garantia da instalação?",
-         ["O serviço de instalação tem 6 meses de garantia.",
+         ["A instalação tem garantia de serviço: se aparecer algum problema, a Zayin vai até o local e verifica.",
           "Nos aparelhos vendidos pela Zayin, a garantia é de 2 anos na evaporadora e de 10 anos na condensadora, conforme as condições de cada fabricante."]),
         ("Quanto custa para instalar?",
          ["O valor depende do tipo de aparelho, da capacidade, da distância entre as unidades e da infraestrutura do local. Envie essas informações pelo WhatsApp e receba o orçamento sem compromisso."]),
@@ -213,13 +213,13 @@ def build_page(city, kind, css, js, logo, logo_w, brands, root_prefix=None):
     else:
         if is_city:
             title = f"Instalação de Ar-Condicionado em {name} com Garantia | Zayin"
-            desc = (f"Instalação de ar-condicionado em {name} com 6 meses de garantia no serviço. Manutenção, "
+            desc = (f"Instalação de ar-condicionado em {name} com garantia de serviço. Manutenção, "
                     "higienização e infraestrutura para obra. Orçamento pelo WhatsApp.")
             canon = f"{DOMAIN}/{cur}/servicos/"
             kicker = f"Serviços de ar-condicionado em {name}"
         else:
             title = "Serviços de Ar-Condicionado: Instalação, Manutenção e Higienização | Zayin"
-            desc = ("Instalação de ar-condicionado com 6 meses de garantia, manutenção preventiva, higienização e "
+            desc = ("Instalação de ar-condicionado com garantia de serviço, manutenção preventiva, higienização e "
                     "infraestrutura para obra no Vale do Paraíba, Mogi das Cruzes e Litoral Norte.")
             canon = f"{DOMAIN}/servicos/"
             kicker = "Instalação, manutenção e higienização"
@@ -278,14 +278,12 @@ def build_page(city, kind, css, js, logo, logo_w, brands, root_prefix=None):
         drawer = [("#aparelhos", "Aparelhos"), ("#marcas", "Marcas"), ("#instalacao", "Instalação"),
                   (svc_href, "Todos os serviços"), ("#garantia", "Garantia"), ("#cidades", "Unidades e mapa"),
                   (f"{svc_href}#sobre", "Sobre a Zayin"), ("#duvidas", "Dúvidas")]
-        mbar_alt = '<a class="btn btn-ghost" href="#aparelhos">Aparelhos</a>'
     else:
         nav = [(f"{home_href}#aparelhos", "Aparelhos"), ("#instalacao", "Instalação"), ("#outros-servicos", "Serviços"),
                ("#orcamento", "Orçamento"), ("#garantia", "Garantia"), ("#duvidas", "Dúvidas")]
         drawer = [(home_href, "Início"), (f"{home_href}#aparelhos", "Aparelhos"), ("#instalacao", "Instalação"),
                   ("#outros-servicos", "Outros serviços"), ("#sobre", "Sobre a Zayin"), ("#orcamento", "Montar pedido"),
                   ("#garantia", "Garantia"), ("#cidades", "Unidades e mapa"), ("#duvidas", "Dúvidas")]
-        mbar_alt = '<a class="btn btn-ghost" href="#orcamento">Montar pedido</a>'
     nav_html = "\n      ".join(f'<a href="{h}">{esc(t)}</a>' for h, t in nav)
     drawer_html = "\n  ".join(f'<a class="dl" href="{h}">{esc(t)}</a>' for h, t in drawer)
 
@@ -407,7 +405,6 @@ def build_page(city, kind, css, js, logo, logo_w, brands, root_prefix=None):
         "{{SVC_PREFIX}}": svc_prefix,
         "{{NAV}}": nav_html,
         "{{DRAWER}}": drawer_html,
-        "{{MBAR_ALT}}": mbar_alt,
         "{{PHONE_LABEL}}": phone_label,
         "{{CITY_MENU}}": city_menu,
         "{{LOC_CHIPS}}": loc_chips,
