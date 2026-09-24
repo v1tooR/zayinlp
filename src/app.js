@@ -538,6 +538,32 @@
     perkGrid.addEventListener('scroll', () => requestAnimationFrame(syncDots), { passive: true });
   }
 
+  /* slider de fotos: pontinhos acompanham o arraste; passa sozinho só enquanto aparece na tela
+     e para de vez quando a pessoa mexe nele (com movimento reduzido, não passa sozinho) */
+  $$('.si-slider').forEach(sl => {
+    const track = $('.ss-track', sl);
+    const dots = $$('.ss-dots button', sl);
+    const n = dots.length;
+    const cur = () => Math.round(track.scrollLeft / track.clientWidth);
+    const go = i => track.scrollTo({ left: ((i + n) % n) * track.clientWidth, behavior: reduce ? 'auto' : 'smooth' });
+    const sync = () => {
+      const i = cur();
+      dots.forEach((d, k) => {
+        d.classList.toggle('is-on', k === i);
+        if (k === i) d.setAttribute('aria-current', 'true'); else d.removeAttribute('aria-current');
+      });
+    };
+    track.addEventListener('scroll', () => requestAnimationFrame(sync), { passive: true });
+    let timer = 0, visible = false, hover = false;
+    const stop = () => { clearInterval(timer); timer = 0; };
+    dots.forEach((d, k) => d.addEventListener('click', () => { stop(); go(k); }));
+    ['pointerdown', 'wheel', 'keydown'].forEach(ev => track.addEventListener(ev, stop, { passive: true }));
+    sl.addEventListener('mouseenter', () => { hover = true; });
+    sl.addEventListener('mouseleave', () => { hover = false; });
+    if (!reduce && n > 1) timer = setInterval(() => { if (visible && !hover && !document.hidden) go(cur() + 1); }, 5000);
+    new IntersectionObserver(([en]) => { visible = en.isIntersecting; }, { threshold: 0.5 }).observe(sl);
+  });
+
   /* avaliações do Google: setas passam de card em card; texto longo ganha "Ler mais" */
   $$('.rv').forEach(rv => {
     const track = $('.rv-track', rv);

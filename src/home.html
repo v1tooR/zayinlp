@@ -142,8 +142,19 @@
 <!-- ============ INSTALAÇÃO E SERVIÇOS (introdução) ============ -->
 <section class="section" id="instalacao">
   <div class="wrap si-grid">
-    <figure class="si-photo" data-reveal="clip" style="margin:0">
-      <img src="{{PHOTOS}}unidade-jacarei-1100.webp" srcset="{{PHOTOS}}unidade-jacarei-700.webp 700w, {{PHOTOS}}unidade-jacarei-1100.webp 1100w" sizes="(max-width: 900px) 92vw, 480px" alt="Picape e equipe da Zayin em frente ao Espaço Ventura, onde fica a unidade de Jacareí" loading="lazy" width="1100" height="1143">
+    <figure class="si-photo si-slider" data-reveal="clip" style="margin:0" role="group" aria-roledescription="carrossel" aria-label="Fotos da Zayin">
+      <div class="ss-track" tabindex="0">
+        <img src="{{PHOTOS}}unidade-jacarei-1100.webp" srcset="{{PHOTOS}}unidade-jacarei-700.webp 700w, {{PHOTOS}}unidade-jacarei-1100.webp 1100w" sizes="(max-width: 900px) 92vw, 480px" alt="Picape e equipe da Zayin em frente ao Espaço Ventura, onde fica a unidade de Jacareí" loading="lazy" width="1100" height="1143">
+        <img src="{{PHOTOS}}tecnico-samsung-1100.webp" srcset="{{PHOTOS}}tecnico-samsung-700.webp 700w, {{PHOTOS}}tecnico-samsung-1100.webp 1100w" sizes="(max-width: 900px) 92vw, 480px" alt="Técnico da Zayin fazendo a ligação elétrica de uma condensadora Samsung de dois ventiladores" loading="lazy" width="1100" height="1180">
+        <img src="{{PHOTOS}}condensadora-samsung-1100.webp" srcset="{{PHOTOS}}condensadora-samsung-700.webp 700w, {{PHOTOS}}condensadora-samsung-1100.webp 1100w" sizes="(max-width: 900px) 92vw, 480px" alt="Condensadora Samsung instalada pela Zayin, com a capa da Zayin e o WhatsApp (12) 99706-7659" loading="lazy" width="1100" height="1472">
+        <img class="is-contain" src="{{PHOTOS}}avaliacoes-clientes-1100.webp" srcset="{{PHOTOS}}avaliacoes-clientes-700.webp 700w, {{PHOTOS}}avaliacoes-clientes-1100.webp 1100w" sizes="(max-width: 900px) 92vw, 480px" alt="Nossos clientes falam por nós: avaliações 5 estrelas de Rosana, Cleusa, Taislane e Osvaldo no Google, com fotos das instalações" loading="lazy" width="1100" height="1100">
+      </div>
+      <div class="ss-dots">
+        <button type="button" aria-label="Mostrar foto 1 de 4" class="is-on" aria-current="true"></button>
+        <button type="button" aria-label="Mostrar foto 2 de 4"></button>
+        <button type="button" aria-label="Mostrar foto 3 de 4"></button>
+        <button type="button" aria-label="Mostrar foto 4 de 4"></button>
+      </div>
     </figure>
     <div class="si-body">
       <div data-reveal>

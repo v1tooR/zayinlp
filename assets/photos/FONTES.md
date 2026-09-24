@@ -11,3 +11,10 @@ Enviadas pela Zayin em 21-22/09/2026. Exportadas em WebP em dois tamanhos (srcse
   - adesivo da porta dizia "Zaynn" e "15 99168-1919": trocado pelo logo da Zayin e (12) 99706-7659;
   - número da fachada dizia 545: trocado por 145 (R. Enéas de Mesquita, 145).
   - As camisas dos técnicos ainda dizem "Zaynn" em letra pequena, ilegível no tamanho da página.
+- `tecnico-samsung-*.webp`, `condensadora-samsung-*.webp`: técnico da Zayin ligando uma condensadora Samsung
+  e a mesma condensadora pronta, com a capa da Zayin (fotos reais, enviadas em 24/09/2026).
+  Usadas no slider de "Instalação e serviços" (home).
+- `avaliacoes-clientes-*.webp`: arte "Nossos clientes falam por nós" feita pela Zayin (24/09/2026), com
+  avaliações do Google. Tem texto, então no slider aparece inteira (sem corte).
+- `cliente-*.webp`: fotos que os clientes postaram nas avaliações do Google (lidas em 23/09/2026),
+  usadas nos cards de avaliação da seção de garantia.

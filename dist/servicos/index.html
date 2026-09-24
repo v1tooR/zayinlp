@@ -520,14 +520,30 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .si-list .go { width: 18px; height: 18px; color: var(--blue); transition: transform .3s var(--ease-out); }
 .si-list a:hover .go { transform: translateX(3px); }
 .si-body .hero-ctas { margin-top: 28px; }
-/* vídeo da Zayin no lugar da foto: vertical, toca sozinho quando aparece na tela */
-.si-reel { background: var(--duct); }
-.si-reel video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.si-reel .vid-toggle { top: 16px; right: 16px; }
+/* slider de fotos no lugar da foto única: arrasta para o lado e passa sozinho enquanto aparece na tela */
+.si-slider { background: #fff; }
+.ss-track {
+  position: absolute; inset: 0; display: flex;
+  overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none;
+}
+.ss-track::-webkit-scrollbar { display: none; }
+.ss-track:focus-visible { outline: 3px solid var(--flow); outline-offset: -3px; }
+.si-slider .ss-track img { position: static; flex: 0 0 100%; scroll-snap-align: start; scroll-snap-stop: always; }
+/* arte com texto (avaliações): aparece inteira, sem corte */
+.si-slider .ss-track img.is-contain { object-fit: contain; padding: 10px 10px 46px; background: #F4F7FB; }
+.ss-dots {
+  position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 2;
+  display: flex; gap: 2px; padding: 2px 6px; border-radius: 999px;
+  background: rgba(6, 43, 82, .38); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.ss-dots button { width: 22px; height: 22px; padding: 0; border: 0; background: none; display: grid; place-items: center; cursor: pointer; }
+.ss-dots button::after { content: ""; width: 7px; height: 7px; border-radius: 4px; background: rgba(255, 255, 255, .6); transition: width .3s var(--ease-out), background-color .3s ease; }
+.ss-dots button.is-on { width: 34px; }
+.ss-dots button.is-on::after { width: 22px; background: #fff; }
 @media (max-width: 900px) {
   .si-grid { grid-template-columns: 1fr; }
   .si-photo { aspect-ratio: 16 / 11; }
-  .si-reel { aspect-ratio: 4 / 5; }
+  .si-slider { aspect-ratio: 1 / 1; }
 }
 @media (max-width: 560px) {
   .si-list { grid-template-columns: 1fr; }
@@ -2369,6 +2385,32 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
     };
     perkGrid.addEventListener('scroll', () => requestAnimationFrame(syncDots), { passive: true });
   }
+
+  /* slider de fotos: pontinhos acompanham o arraste; passa sozinho só enquanto aparece na tela
+     e para de vez quando a pessoa mexe nele (com movimento reduzido, não passa sozinho) */
+  $$('.si-slider').forEach(sl => {
+    const track = $('.ss-track', sl);
+    const dots = $$('.ss-dots button', sl);
+    const n = dots.length;
+    const cur = () => Math.round(track.scrollLeft / track.clientWidth);
+    const go = i => track.scrollTo({ left: ((i + n) % n) * track.clientWidth, behavior: reduce ? 'auto' : 'smooth' });
+    const sync = () => {
+      const i = cur();
+      dots.forEach((d, k) => {
+        d.classList.toggle('is-on', k === i);
+        if (k === i) d.setAttribute('aria-current', 'true'); else d.removeAttribute('aria-current');
+      });
+    };
+    track.addEventListener('scroll', () => requestAnimationFrame(sync), { passive: true });
+    let timer = 0, visible = false, hover = false;
+    const stop = () => { clearInterval(timer); timer = 0; };
+    dots.forEach((d, k) => d.addEventListener('click', () => { stop(); go(k); }));
+    ['pointerdown', 'wheel', 'keydown'].forEach(ev => track.addEventListener(ev, stop, { passive: true }));
+    sl.addEventListener('mouseenter', () => { hover = true; });
+    sl.addEventListener('mouseleave', () => { hover = false; });
+    if (!reduce && n > 1) timer = setInterval(() => { if (visible && !hover && !document.hidden) go(cur() + 1); }, 5000);
+    new IntersectionObserver(([en]) => { visible = en.isIntersecting; }, { threshold: 0.5 }).observe(sl);
+  });
 
   /* avaliações do Google: setas passam de card em card; texto longo ganha "Ler mais" */
   $$('.rv').forEach(rv => {
