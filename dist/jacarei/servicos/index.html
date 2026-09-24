@@ -1186,7 +1186,12 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
 .footer .social svg { width: 20px; height: 20px; }
 .f-bottom { margin-top: 48px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, .12); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 13.5px; color: rgba(255, 255, 255, .55); }
 @media (max-width: 900px) { .f-grid { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 520px) { .f-grid { grid-template-columns: 1fr; } }
+/* celular: rodapé numa coluna só, tudo centralizado */
+@media (max-width: 520px) {
+  .f-grid { grid-template-columns: 1fr; text-align: center; }
+  .footer img, .footer .tagline { margin-inline: auto; }
+  .f-bottom { flex-direction: column; align-items: center; text-align: center; }
+}
 
 /* fotos ampliáveis e visualizador em tela cheia */
 [data-zoom] img { cursor: zoom-in; }
@@ -1889,7 +1894,6 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
         <h3>Contato</h3>
         <ul>
           <li><a data-wa="Olá, vim do seu site e quero fazer um orçamento." data-wa-phone="5512997067659" href="#">SJC e região: (12) 99706-7659</a></li>
-          <li><a data-wa="Olá, vim do seu site e quero fazer um orçamento. Estou em Jacareí." data-wa-phone="5512992019832" href="#">Jacareí: (12) 99201-9832</a></li>
         </ul>
       </div>
     </div>
