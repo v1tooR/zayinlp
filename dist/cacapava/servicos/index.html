@@ -1188,6 +1188,65 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
 @media (max-width: 900px) { .f-grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 520px) { .f-grid { grid-template-columns: 1fr; } }
 
+/* fotos ampliáveis e visualizador em tela cheia */
+[data-zoom] img { cursor: zoom-in; }
+[data-zoom] img:focus-visible { outline: 3px solid var(--flow); outline-offset: -3px; }
+.lb {
+  position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none;
+  margin: 0; padding: 0; border: 0; overflow: hidden;
+  background: #041428; color: #fff;
+}
+.lb::backdrop { background: transparent; }
+.lb[open] { animation: lbin .25s ease; }
+@keyframes lbin { from { opacity: 0; } }
+.lb-stage {
+  position: absolute; inset: 0; display: flex; overflow: auto;
+  padding: 68px 16px 76px; overscroll-behavior: contain; scrollbar-width: none;
+}
+.lb-stage::-webkit-scrollbar { display: none; }
+/* margin: auto centraliza sem esconder as bordas quando a foto fica maior que a tela */
+.lb-stage img {
+  margin: auto; width: auto; height: auto; max-width: 100%; max-height: 100%;
+  border-radius: 12px; cursor: zoom-in; user-select: none; -webkit-user-select: none;
+  touch-action: pinch-zoom;
+}
+.lb.is-zoomed .lb-stage img { max-width: none; max-height: none; border-radius: 0; cursor: zoom-out; touch-action: auto; }
+.lb-close, .lb-prev, .lb-next {
+  position: absolute; z-index: 2; width: 46px; height: 46px; border: 0; border-radius: 50%;
+  display: grid; place-items: center; color: #fff; cursor: pointer;
+  background: rgba(255, 255, 255, .14); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .22);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  transition: background-color .2s ease;
+}
+.lb-close:hover, .lb-prev:hover, .lb-next:hover { background: rgba(255, 255, 255, .26); }
+.lb-close { top: calc(12px + env(safe-area-inset-top, 0px)); right: 12px; }
+.lb-prev, .lb-next { top: 50%; transform: translateY(-50%); }
+.lb-prev { left: 16px; }
+.lb-next { right: 16px; }
+.lb-close svg { width: 20px; height: 20px; }
+.lb-prev svg, .lb-next svg { width: 20px; height: 20px; }
+.lb-prev svg { transform: rotate(180deg); }
+.lb.is-single .lb-prev, .lb.is-single .lb-next, .lb.is-zoomed .lb-prev, .lb.is-zoomed .lb-next { display: none; }
+.lb-bar {
+  position: absolute; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 1;
+  transform: translateX(-50%); width: max-content; max-width: calc(100% - 120px);
+  display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; padding: 8px 14px; border-radius: 999px;
+  background: rgba(4, 20, 40, .78); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  font-size: 14px; line-height: 1.3; text-align: center; color: rgba(255, 255, 255, .82); pointer-events: none;
+}
+.lb-count:not(:empty) { font-weight: 700; color: #fff; }
+.lb-count:not(:empty)::after { content: "·"; margin-left: 10px; color: rgba(255, 255, 255, .5); }
+.lb.is-zoomed .lb-count { display: none; }
+.lb.is-zoomed .lb-bar { max-width: calc(100% - 32px); }
+@media (max-width: 600px) {
+  /* celular: setas descem para o pé, fora da foto */
+  .lb-prev, .lb-next { top: auto; bottom: calc(8px + env(safe-area-inset-bottom, 0px)); transform: none; width: 42px; height: 42px; }
+  .lb-prev { left: 12px; }
+  .lb-next { right: 12px; }
+  .lb-bar { bottom: calc(10px + env(safe-area-inset-bottom, 0px)); font-size: 13px; }
+  .lb-stage { padding: 64px 8px 72px; }
+}
+
 /* WhatsApp flutuante: sempre à mão no canto da tela, do jeito que as pessoas já esperam */
 .wa-float {
   position: fixed; right: 20px; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 40;
@@ -1586,16 +1645,16 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
         <span class="rv-score"><b>5,0</b><span class="stars" role="img" aria-label="5 estrelas"><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg></span></span>
         <span class="rv-count">61 avaliações<br>no Google</span>
       </div>
-      <div class="rv-track" tabindex="0" role="region" aria-label="Avaliações de clientes no Google">
+      <div class="rv-track" data-zoom tabindex="0" role="region" aria-label="Avaliações de clientes no Google">
         <article class="rv-card has-photo">
-          <img class="rv-photo" src="../../img/fotos/cliente-tatiane.webp" alt="Ar-condicionado instalado pela Zayin, foto postada por Tatiane K. na avaliação" loading="lazy" width="600" height="800"><div class="rv-body">
+          <img class="rv-photo" src="../../img/fotos/cliente-tatiane.webp" alt="Ar-condicionado instalado pela Zayin, foto postada por Tatiane K. na avaliação" data-full="../../img/fotos/cliente-tatiane-grande.webp" loading="lazy" width="600" height="800"><div class="rv-body">
             <span class="stars" role="img" aria-label="5 estrelas"><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg></span>
             <p class="rv-text">Escolhi a Zayin ao acaso pelo Google, e tomei como base as avaliações dos clientes anteriores, portanto gostaria de deixar a minha opinião após o serviço executado. Primeiramente gostaria de falar do atendimento e atenção ao cliente, o Lucas foi meu primeiro contato e agradeço pela disposição em me atender com atenção. Os meninos que vieram para a instalação uma simpatia também, preço justo, cumprem o prazo e testam cada aparelho antes de finalizarem o serviço. Estão de parabéns e super indico</p>
             <div class="rv-who"><span class="rv-av" style="--c:#005094" aria-hidden="true">T</span><div><b>Tatiane K.</b><small>Unidade SJC</small></div></div>
           </div>
         </article>
         <article class="rv-card has-photo">
-          <img class="rv-photo" src="../../img/fotos/cliente-hisashi.webp" alt="Ar-condicionado instalado pela Zayin, foto postada por Hisashi H. na avaliação" loading="lazy" width="600" height="800"><div class="rv-body">
+          <img class="rv-photo" src="../../img/fotos/cliente-hisashi.webp" alt="Ar-condicionado instalado pela Zayin, foto postada por Hisashi H. na avaliação" data-full="../../img/fotos/cliente-hisashi-grande.webp" loading="lazy" width="600" height="800"><div class="rv-body">
             <span class="stars" role="img" aria-label="5 estrelas"><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg></span>
             <p class="rv-text">A instalação foi feita com bastante atenção pelo técnico, o valor também estáva dentro do esperado, material de cobre, eu tive uma boa experiência com a empresa.</p>
             <div class="rv-who"><span class="rv-av" style="--c:#062B52" aria-hidden="true">H</span><div><b>Hisashi H.</b><small>Unidade SJC</small></div></div>
@@ -1609,14 +1668,14 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
           </div>
         </article>
         <article class="rv-card has-photo">
-          <img class="rv-photo" src="../../img/fotos/cliente-ricardo.webp" alt="Ar-condicionado instalado pela Zayin, foto postada por Ricardo S. na avaliação" loading="lazy" width="600" height="800"><div class="rv-body">
+          <img class="rv-photo" src="../../img/fotos/cliente-ricardo.webp" alt="Ar-condicionado instalado pela Zayin, foto postada por Ricardo S. na avaliação" data-full="../../img/fotos/cliente-ricardo-grande.webp" loading="lazy" width="600" height="800"><div class="rv-body">
             <span class="stars" role="img" aria-label="5 estrelas"><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg></span>
             <p class="rv-text">Excelente atendimento e mão de obra especializada, very good!</p>
             <div class="rv-who"><span class="rv-av" style="--c:#1F7A5C" aria-hidden="true">R</span><div><b>Ricardo S.</b><small>Unidade Jacareí</small></div></div>
           </div>
         </article>
         <article class="rv-card has-photo">
-          <img class="rv-photo" src="../../img/fotos/cliente-cleusa.webp" alt="Ar-condicionado instalado pela Zayin, foto postada por Cleusa G. na avaliação" loading="lazy" width="600" height="800"><div class="rv-body">
+          <img class="rv-photo" src="../../img/fotos/cliente-cleusa.webp" alt="Ar-condicionado instalado pela Zayin, foto postada por Cleusa G. na avaliação" data-full="../../img/fotos/cliente-cleusa-grande.webp" loading="lazy" width="600" height="800"><div class="rv-body">
             <span class="stars" role="img" aria-label="5 estrelas"><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg></span>
             <p class="rv-text">Desde o início, só alegria. Empresa: organizada, profissional, responde rapidinho, muito foco no cliente. Instalação: nota 10. Colaboradores eficientes, prazo bem rápido, pessoal bastante conhecedor do assunto. Nota 10.</p>
             <div class="rv-who"><span class="rv-av" style="--c:#005094" aria-hidden="true">C</span><div><b>Cleusa G.</b><small>Unidade SJC</small></div></div>
@@ -1630,7 +1689,7 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
           </div>
         </article>
         <article class="rv-card has-photo">
-          <img class="rv-photo" src="../../img/fotos/cliente-osvaldo.webp" alt="Ar-condicionado instalado pela Zayin, foto postada por Osvaldo J. na avaliação" loading="lazy" width="600" height="800"><div class="rv-body">
+          <img class="rv-photo" src="../../img/fotos/cliente-osvaldo.webp" alt="Ar-condicionado instalado pela Zayin, foto postada por Osvaldo J. na avaliação" data-full="../../img/fotos/cliente-osvaldo-grande.webp" loading="lazy" width="600" height="800"><div class="rv-body">
             <span class="stars" role="img" aria-label="5 estrelas"><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg></span>
             <p class="rv-text">Ótimo serviço, instalação muito bem feita, pontuais.</p>
             <div class="rv-who"><span class="rv-av" style="--c:#0A7FB8" aria-hidden="true">O</span><div><b>Osvaldo J.</b><small>Unidade SJC</small></div></div>
@@ -1644,7 +1703,7 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
           </div>
         </article>
         <article class="rv-card has-photo">
-          <img class="rv-photo" src="../../img/fotos/cliente-taislane.webp" alt="Ar-condicionado instalado pela Zayin, foto postada por Taislane S. na avaliação" loading="lazy" width="600" height="800"><div class="rv-body">
+          <img class="rv-photo" src="../../img/fotos/cliente-taislane.webp" alt="Ar-condicionado instalado pela Zayin, foto postada por Taislane S. na avaliação" data-full="../../img/fotos/cliente-taislane-grande.webp" loading="lazy" width="600" height="800"><div class="rv-body">
             <span class="stars" role="img" aria-label="5 estrelas"><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg></span>
             <p class="rv-text">O Lucas é muito atencioso e educado! Fez a instalação do meu ar condicionado e ficou ótimo! Super recomendo o serviço!</p>
             <div class="rv-who"><span class="rv-av" style="--c:#005094" aria-hidden="true">T</span><div><b>Taislane S.</b><small>Unidade SJC</small></div></div>
@@ -2410,6 +2469,98 @@ input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius
     if (!reduce && n > 1) timer = setInterval(() => { if (visible && !hover && !document.hidden) go(cur() + 1); }, 5000);
     new IntersectionObserver(([en]) => { visible = en.isIntersecting; }, { threshold: 0.5 }).observe(sl);
   });
+
+  /* ampliar fotos ([data-zoom]): toque abre em tela cheia; lá, toque amplia e arrasta para ver os detalhes.
+     Setas ou arraste passam para a foto do lado; X, Esc ou toque fora da foto fecham. */
+  const zoomImgs = $$('[data-zoom] img');
+  if (zoomImgs.length) {
+    const lb = document.createElement('dialog');
+    lb.className = 'lb';
+    lb.setAttribute('aria-label', 'Foto ampliada');
+    lb.innerHTML = `<div class="lb-stage"><img alt="" draggable="false"></div>
+      <button class="lb-close" type="button" aria-label="Fechar"><svg aria-hidden="true"><use href="#i-close"/></svg></button>
+      <button class="lb-prev" type="button" aria-label="Foto anterior"><svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+      <button class="lb-next" type="button" aria-label="Próxima foto"><svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+      <p class="lb-bar"><span class="lb-count"></span><span class="lb-hint"></span></p>`;
+    document.body.append(lb);
+    const stage = $('.lb-stage', lb), big = $('img', stage);
+    const count = $('.lb-count', lb), hint = $('.lb-hint', lb);
+    let group = [], idx = 0;
+    // maior versão disponível: data-full, senão a maior do srcset
+    const full = img => {
+      if (img.dataset.full) return img.dataset.full;
+      const best = (img.getAttribute('srcset') || '').split(',').map(s => s.trim().split(/\s+/))
+        .filter(p => p[1]).sort((a, b) => parseInt(b[1]) - parseInt(a[1]))[0];
+      return best ? best[0] : img.currentSrc || img.src;
+    };
+    const setZoom = on => {
+      lb.classList.toggle('is-zoomed', on);
+      if (!on) big.style.width = '';
+      hint.textContent = on ? 'Arraste para ver · toque para voltar' : 'Toque na foto para ampliar';
+    };
+    const show = i => {
+      idx = (i + group.length) % group.length;
+      setZoom(false);
+      big.src = full(group[idx]);
+      big.alt = group[idx].alt;
+      count.textContent = group.length > 1 ? `${idx + 1} de ${group.length}` : '';
+    };
+    const open = img => {
+      group = $$('img', img.closest('[data-zoom]'));
+      lb.classList.toggle('is-single', group.length < 2);
+      show(group.indexOf(img));
+      lb.showModal();
+      document.documentElement.style.overflow = 'hidden';
+    };
+    lb.addEventListener('close', () => { document.documentElement.style.overflow = ''; setZoom(false); });
+    zoomImgs.forEach(img => {
+      img.tabIndex = 0;
+      img.setAttribute('role', 'button');
+      img.setAttribute('aria-label', `Ampliar foto: ${img.alt}`);
+      img.addEventListener('click', () => open(img));
+      img.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(img); } });
+    });
+    $('.lb-close', lb).addEventListener('click', () => lb.close());
+    $('.lb-prev', lb).addEventListener('click', () => show(idx - 1));
+    $('.lb-next', lb).addEventListener('click', () => show(idx + 1));
+    lb.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') show(idx - 1);
+      if (e.key === 'ArrowRight') show(idx + 1);
+    });
+    stage.addEventListener('click', e => { if (e.target === stage) lb.close(); });
+
+    // arrastar: ampliada, move a foto (mouse; no toque a rolagem nativa já faz isso);
+    // sem ampliar, arrastar para o lado troca de foto
+    let sx = 0, sy = 0, sl = 0, st = 0, moved = false, dragging = false;
+    big.addEventListener('pointerdown', e => {
+      sx = e.clientX; sy = e.clientY; sl = stage.scrollLeft; st = stage.scrollTop; moved = false;
+      dragging = e.pointerType === 'mouse' && lb.classList.contains('is-zoomed');
+      if (dragging) big.setPointerCapture(e.pointerId);
+    });
+    big.addEventListener('pointermove', e => {
+      if (Math.abs(e.clientX - sx) + Math.abs(e.clientY - sy) > 6) moved = true;
+      if (dragging) { stage.scrollLeft = sl - (e.clientX - sx); stage.scrollTop = st - (e.clientY - sy); }
+    });
+    big.addEventListener('pointerup', e => {
+      dragging = false;
+      const dx = e.clientX - sx;
+      if (!lb.classList.contains('is-zoomed') && group.length > 1 && Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(e.clientY - sy)) {
+        moved = true;
+        show(idx + (dx < 0 ? 1 : -1));
+      }
+    });
+    big.addEventListener('click', e => {
+      if (moved) return;
+      if (lb.classList.contains('is-zoomed')) { setZoom(false); return; }
+      // amplia no ponto tocado
+      const r = big.getBoundingClientRect();
+      const fx = (e.clientX - r.left) / r.width, fy = (e.clientY - r.top) / r.height;
+      big.style.width = `${Math.round(r.width * 2.5)}px`;
+      setZoom(true);
+      stage.scrollLeft = fx * big.offsetWidth - stage.clientWidth / 2;
+      stage.scrollTop = fy * big.offsetHeight - stage.clientHeight / 2;
+    });
+  }
 
   /* avaliações do Google: setas passam de card em card; texto longo ganha "Ler mais" */
   $$('.rv').forEach(rv => {

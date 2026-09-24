@@ -564,6 +564,98 @@
     new IntersectionObserver(([en]) => { visible = en.isIntersecting; }, { threshold: 0.5 }).observe(sl);
   });
 
+  /* ampliar fotos ([data-zoom]): toque abre em tela cheia; lá, toque amplia e arrasta para ver os detalhes.
+     Setas ou arraste passam para a foto do lado; X, Esc ou toque fora da foto fecham. */
+  const zoomImgs = $$('[data-zoom] img');
+  if (zoomImgs.length) {
+    const lb = document.createElement('dialog');
+    lb.className = 'lb';
+    lb.setAttribute('aria-label', 'Foto ampliada');
+    lb.innerHTML = `<div class="lb-stage"><img alt="" draggable="false"></div>
+      <button class="lb-close" type="button" aria-label="Fechar"><svg aria-hidden="true"><use href="#i-close"/></svg></button>
+      <button class="lb-prev" type="button" aria-label="Foto anterior"><svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+      <button class="lb-next" type="button" aria-label="Próxima foto"><svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+      <p class="lb-bar"><span class="lb-count"></span><span class="lb-hint"></span></p>`;
+    document.body.append(lb);
+    const stage = $('.lb-stage', lb), big = $('img', stage);
+    const count = $('.lb-count', lb), hint = $('.lb-hint', lb);
+    let group = [], idx = 0;
+    // maior versão disponível: data-full, senão a maior do srcset
+    const full = img => {
+      if (img.dataset.full) return img.dataset.full;
+      const best = (img.getAttribute('srcset') || '').split(',').map(s => s.trim().split(/\s+/))
+        .filter(p => p[1]).sort((a, b) => parseInt(b[1]) - parseInt(a[1]))[0];
+      return best ? best[0] : img.currentSrc || img.src;
+    };
+    const setZoom = on => {
+      lb.classList.toggle('is-zoomed', on);
+      if (!on) big.style.width = '';
+      hint.textContent = on ? 'Arraste para ver · toque para voltar' : 'Toque na foto para ampliar';
+    };
+    const show = i => {
+      idx = (i + group.length) % group.length;
+      setZoom(false);
+      big.src = full(group[idx]);
+      big.alt = group[idx].alt;
+      count.textContent = group.length > 1 ? `${idx + 1} de ${group.length}` : '';
+    };
+    const open = img => {
+      group = $$('img', img.closest('[data-zoom]'));
+      lb.classList.toggle('is-single', group.length < 2);
+      show(group.indexOf(img));
+      lb.showModal();
+      document.documentElement.style.overflow = 'hidden';
+    };
+    lb.addEventListener('close', () => { document.documentElement.style.overflow = ''; setZoom(false); });
+    zoomImgs.forEach(img => {
+      img.tabIndex = 0;
+      img.setAttribute('role', 'button');
+      img.setAttribute('aria-label', `Ampliar foto: ${img.alt}`);
+      img.addEventListener('click', () => open(img));
+      img.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(img); } });
+    });
+    $('.lb-close', lb).addEventListener('click', () => lb.close());
+    $('.lb-prev', lb).addEventListener('click', () => show(idx - 1));
+    $('.lb-next', lb).addEventListener('click', () => show(idx + 1));
+    lb.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') show(idx - 1);
+      if (e.key === 'ArrowRight') show(idx + 1);
+    });
+    stage.addEventListener('click', e => { if (e.target === stage) lb.close(); });
+
+    // arrastar: ampliada, move a foto (mouse; no toque a rolagem nativa já faz isso);
+    // sem ampliar, arrastar para o lado troca de foto
+    let sx = 0, sy = 0, sl = 0, st = 0, moved = false, dragging = false;
+    big.addEventListener('pointerdown', e => {
+      sx = e.clientX; sy = e.clientY; sl = stage.scrollLeft; st = stage.scrollTop; moved = false;
+      dragging = e.pointerType === 'mouse' && lb.classList.contains('is-zoomed');
+      if (dragging) big.setPointerCapture(e.pointerId);
+    });
+    big.addEventListener('pointermove', e => {
+      if (Math.abs(e.clientX - sx) + Math.abs(e.clientY - sy) > 6) moved = true;
+      if (dragging) { stage.scrollLeft = sl - (e.clientX - sx); stage.scrollTop = st - (e.clientY - sy); }
+    });
+    big.addEventListener('pointerup', e => {
+      dragging = false;
+      const dx = e.clientX - sx;
+      if (!lb.classList.contains('is-zoomed') && group.length > 1 && Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(e.clientY - sy)) {
+        moved = true;
+        show(idx + (dx < 0 ? 1 : -1));
+      }
+    });
+    big.addEventListener('click', e => {
+      if (moved) return;
+      if (lb.classList.contains('is-zoomed')) { setZoom(false); return; }
+      // amplia no ponto tocado
+      const r = big.getBoundingClientRect();
+      const fx = (e.clientX - r.left) / r.width, fy = (e.clientY - r.top) / r.height;
+      big.style.width = `${Math.round(r.width * 2.5)}px`;
+      setZoom(true);
+      stage.scrollLeft = fx * big.offsetWidth - stage.clientWidth / 2;
+      stage.scrollTop = fy * big.offsetHeight - stage.clientHeight / 2;
+    });
+  }
+
   /* avaliações do Google: setas passam de card em card; texto longo ganha "Ler mais" */
   $$('.rv').forEach(rv => {
     const track = $('.rv-track', rv);

@@ -189,7 +189,7 @@ def reviews_html(root, g_rating, g_reviews):
         img = ""
         if r.get("photo"):
             img = (f'<img class="rv-photo" src="{photos}{r["photo"]}.webp" alt="Ar-condicionado instalado pela Zayin, '
-                   f'foto postada por {esc(r["name"])} na avaliação" loading="lazy" width="600" height="800">')
+                   f'foto postada por {esc(r["name"])} na avaliação" data-full="{photos}{r["photo"]}-grande.webp" loading="lazy" width="600" height="800">')
         cards.append(f'''<article class="rv-card{" has-photo" if img else ""}">
           {img}<div class="rv-body">
             {stars}
@@ -204,7 +204,7 @@ def reviews_html(root, g_rating, g_reviews):
         <span class="rv-score"><b>{g_rating}</b>{stars}</span>
         <span class="rv-count">{g_reviews} avaliações<br>no Google</span>
       </div>
-      <div class="rv-track" tabindex="0" role="region" aria-label="Avaliações de clientes no Google">
+      <div class="rv-track" data-zoom tabindex="0" role="region" aria-label="Avaliações de clientes no Google">
         {cards_html}
       </div>
       <div class="rv-foot">
