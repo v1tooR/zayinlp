@@ -11,13 +11,14 @@ import json
 import math
 import re
 import shutil
+from datetime import date
 from pathlib import Path
 from urllib.parse import quote_plus
 
 ROOT = Path(__file__).parent
 SRC = ROOT / "src"
 DIST = ROOT / "dist"
-DOMAIN = "https://zayinarcondicionado.com"
+DOMAIN = "https://zayinarcondicionado.com.br"
 
 SJC_PHONE = ("5512997067659", "(12) 99706-7659")
 JAC_PHONE = ("5512992019832", "(12) 99201-9832")
@@ -273,6 +274,7 @@ def build_page(city, kind, css, js, logo, logo_w, brands, root_prefix=None):
     name = city["name"] if is_city else None
     cur = city["slug"] if is_city else None
     phone, phone_label = city["phone"] if is_city else SJC_PHONE
+    other_unit = next(u for u in UNITS if u["phone"] != (phone, phone_label))
 
     # caminhos relativos até a raiz do site
     depth = (1 if is_city else 0) + (0 if is_home else 1)
@@ -284,27 +286,27 @@ def build_page(city, kind, css, js, logo, logo_w, brands, root_prefix=None):
 
     if is_home:
         if is_city:
-            title = f"Ar-Condicionado em {name}: Compra e Instalação com Garantia | Zayin"
-            desc = (f"Compre seu ar-condicionado em {name} com instalação e garantia. Hi-wall, piso teto e cassete "
-                    "das marcas líderes, com entrega rápida. Orçamento pelo WhatsApp.")
+            title = f"Ar-condicionado em {name} | Zayin"
+            desc = (f"Venda e instalação de ar-condicionado em {name}, com garantia. Modelos hi-wall, piso teto e "
+                    "cassete das marcas líderes. Peça seu orçamento.")
             canon = f"{DOMAIN}/{cur}/"
         else:
-            title = "Zayin Ar Condicionado | Compra e instalação com garantia no Vale do Paraíba"
-            desc = ("Compra e instalação de ar-condicionado com garantia e entrega rápida em São José dos Campos, Jacareí, "
-                    "Taubaté, Pindamonhangaba, Caçapava, Mogi das Cruzes e Litoral Norte. Orçamento pelo WhatsApp.")
+            title = "Ar-condicionado no Vale do Paraíba | Zayin"
+            desc = ("Venda e instalação de ar-condicionado com garantia no Vale do Paraíba, em Mogi das Cruzes e no "
+                    "Litoral Norte. Peça seu orçamento.")
             canon = f"{DOMAIN}/"
         kicker = KICKER
     else:
         if is_city:
-            title = f"Instalação de Ar-Condicionado em {name} com Garantia | Zayin"
+            title = f"Instalação de ar-condicionado em {name} | Zayin"
             desc = (f"Instalação de ar-condicionado em {name} com garantia de serviço. Manutenção, "
-                    "higienização e infraestrutura para obra. Orçamento pelo WhatsApp.")
+                    "higienização e infraestrutura para obra. Peça seu orçamento.")
             canon = f"{DOMAIN}/{cur}/servicos/"
             kicker = f"Serviços de ar-condicionado em {name}"
         else:
-            title = "Serviços de Ar-Condicionado: Instalação, Manutenção e Higienização | Zayin"
-            desc = ("Instalação de ar-condicionado com garantia de serviço, manutenção preventiva, higienização e "
-                    "infraestrutura para obra no Vale do Paraíba, Mogi das Cruzes e Litoral Norte.")
+            title = "Instalação e manutenção de ar-condicionado | Zayin"
+            desc = ("Instalação e manutenção de ar-condicionado com garantia no Vale do Paraíba, em Mogi das Cruzes "
+                    "e no Litoral Norte. Peça seu orçamento.")
             canon = f"{DOMAIN}/servicos/"
             kicker = "Instalação, manutenção e higienização"
 
@@ -316,8 +318,7 @@ def build_page(city, kind, css, js, logo, logo_w, brands, root_prefix=None):
         region = f"{name} e região"
         final_p = f"Chame a Zayin em {name} e receba seu orçamento pelo WhatsApp."
     else:
-        # home sem cidade fala do país; a página de serviços segue regional
-        h1_city = "em todo o Brasil" if is_home else "no Vale do Paraíba"
+        h1_city = "no Vale do Paraíba"
         msg_city = ""
         city_btn = "Sua cidade"
         city_btn_short = "Sua cidade"
@@ -398,49 +399,102 @@ def build_page(city, kind, css, js, logo, logo_w, brands, root_prefix=None):
         for q, ps in faqs
     )
 
-    business = {
-        "@type": "HVACBusiness",
+    organization_id = f"{DOMAIN}/#organization"
+    website_id = f"{DOMAIN}/#website"
+    webpage_id = f"{canon}#webpage"
+    logo_url = f"{DOMAIN}/img/logo-color.webp"
+    share_image = f"{DOMAIN}/img/fotos/tecnico-condensadora-1200.webp"
+    organization = {
+        "@type": "Organization",
+        "@id": organization_id,
         "name": "Zayin Ar Condicionado",
-        "url": canon,
-        "telephone": "+55 " + phone_label.replace("(", "").replace(")", ""),
-        "description": desc,
+        "url": f"{DOMAIN}/",
+        "logo": {"@type": "ImageObject", "url": logo_url},
+        "description": ("Venda, instalação, manutenção e higienização de ar-condicionado no Vale do Paraíba, "
+                        "em Mogi das Cruzes e no Litoral Norte."),
         "slogan": "Autorizado a venda, instalação com garantia.",
-        "areaServed": [c["name"] for c in CITIES] + ["Litoral Norte"],
         "brand": [{"@type": "Brand", "name": b["name"]} for b in brands],
         "sameAs": ["https://www.instagram.com/zayinarcondicionado/"],
-        "department": [{
+        "contactPoint": [{
+            "@type": "ContactPoint",
+            "telephone": "+55" + u["phone"][0][2:],
+            "contactType": "customer service",
+            "areaServed": u["serves"],
+            "availableLanguage": "pt-BR",
+        } for u in UNITS],
+    }
+    locations = [{
             "@type": "HVACBusiness",
+            "@id": f"{DOMAIN}/#{u['slug']}",
             "name": f"Zayin Ar Condicionado {u['name']}",
-            "telephone": "+55 " + u["phone"][1].replace("(", "").replace(")", ""),
+            "url": f"{DOMAIN}/{u['slug']}/servicos/",
+            "image": share_image,
+            "telephone": "+55" + u["phone"][0][2:],
+            "parentOrganization": {"@id": organization_id},
             "address": {"@type": "PostalAddress", "streetAddress": u["street"], "addressLocality": u["locality"],
                         "addressRegion": "SP", "postalCode": u["postal"], "addressCountry": "BR"},
             "geo": {"@type": "GeoCoordinates", "latitude": u["lat"], "longitude": u["lng"]},
             "hasMap": u["gmaps"],
-        } for u in UNITS],
+            "sameAs": [u["gmaps"]],
+            "areaServed": u["serves"],
+        } for u in UNITS]
+    website = {
+        "@type": "WebSite",
+        "@id": website_id,
+        "url": f"{DOMAIN}/",
+        "name": "Zayin Ar Condicionado",
+        "inLanguage": "pt-BR",
+        "publisher": {"@id": organization_id},
     }
-    graph = [business]
-    if is_home:
-        graph.append({
-            "@type": "FAQPage",
-            "mainEntity": [
-                {"@type": "Question", "name": q,
-                 "acceptedAnswer": {"@type": "Answer", "text": " ".join(ps)}}
-                for q, ps in faqs
-            ],
-        })
-    else:
-        business["hasOfferCatalog"] = {
+    webpage = {
+        "@type": "WebPage",
+        "@id": webpage_id,
+        "url": canon,
+        "name": title,
+        "description": desc,
+        "inLanguage": "pt-BR",
+        "isPartOf": {"@id": website_id},
+        "about": {"@id": organization_id},
+        "primaryImageOfPage": {"@type": "ImageObject", "url": share_image},
+    }
+    graph = [organization, website, webpage, *locations]
+    graph.append({
+        "@type": "FAQPage",
+        "@id": f"{canon}#faq",
+        "url": canon,
+        "inLanguage": "pt-BR",
+        "mainEntity": [
+            {"@type": "Question", "name": q,
+             "acceptedAnswer": {"@type": "Answer", "text": " ".join(ps)}}
+            for q, ps in faqs
+        ],
+    })
+    if not is_home:
+        webpage["mainEntity"] = {
             "@type": "OfferCatalog",
             "name": "Serviços de ar-condicionado",
-            "itemListElement": [{"@type": "Offer", "itemOffered": {"@type": "Service", "name": s}} for s in SERVICES],
+            "itemListElement": [{
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": s,
+                    "provider": {"@id": organization_id},
+                    "areaServed": name or "Vale do Paraíba, Mogi das Cruzes e Litoral Norte",
+                },
+            } for s in SERVICES],
         }
-        home_abs = f"{DOMAIN}/{cur}/" if is_city else f"{DOMAIN}/"
+    if is_city or not is_home:
+        home_abs = f"{DOMAIN}/"
+        crumbs = [{"@type": "ListItem", "position": 1, "name": "Início", "item": home_abs}]
+        if is_city:
+            city_abs = f"{DOMAIN}/{cur}/"
+            crumbs.append({"@type": "ListItem", "position": 2, "name": name, "item": city_abs})
+        if not is_home:
+            crumbs.append({"@type": "ListItem", "position": len(crumbs) + 1, "name": "Serviços", "item": canon})
         graph.append({
             "@type": "BreadcrumbList",
-            "itemListElement": [
-                {"@type": "ListItem", "position": 1, "name": "Início", "item": home_abs},
-                {"@type": "ListItem", "position": 2, "name": "Serviços", "item": canon},
-            ],
+            "@id": f"{canon}#breadcrumb",
+            "itemListElement": crumbs,
         })
     jsonld = {"@context": "https://schema.org", "@graph": graph}
 
@@ -472,6 +526,7 @@ def build_page(city, kind, css, js, logo, logo_w, brands, root_prefix=None):
         "{{TITLE}}": esc(title),
         "{{DESC}}": esc(desc),
         "{{CANON}}": canon,
+        "{{OG_IMAGE}}": share_image,
         "{{KIND}}": kind,
         "{{KICKER}}": esc(kicker),
         # na home o header começa transparente, por cima do vídeo
@@ -490,6 +545,10 @@ def build_page(city, kind, css, js, logo, logo_w, brands, root_prefix=None):
         "{{NAV}}": nav_html,
         "{{DRAWER}}": drawer_html,
         "{{PHONE_LABEL}}": phone_label,
+        "{{PHONE}}": phone,
+        "{{OTHER_UNIT_NAME}}": esc(other_unit["name"]),
+        "{{OTHER_PHONE}}": other_unit["phone"][0],
+        "{{OTHER_PHONE_LABEL}}": other_unit["phone"][1],
         "{{CITY_MENU}}": city_menu,
         "{{LOC_CHIPS}}": loc_chips,
         "{{LOC_NOTE}}": esc(loc_note),
@@ -551,6 +610,36 @@ def copy_product_images():
     return len(list(src.glob("*.webp")))
 
 
+def copy_branding():
+    img = DIST / "img"
+    img.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(ROOT / "assets" / "logo-color.webp", img / "logo-color.webp")
+    shutil.copyfile(ROOT / "assets" / "logo-white.webp", img / "logo-white.webp")
+    shutil.copyfile(ROOT / "favicon.svg", DIST / "favicon.svg")
+
+
+def public_urls():
+    urls = [f"{DOMAIN}/", f"{DOMAIN}/servicos/"]
+    for city in CITIES:
+        urls.extend((f"{DOMAIN}/{city['slug']}/", f"{DOMAIN}/{city['slug']}/servicos/"))
+    return urls
+
+
+def sitemap_xml():
+    today = date.today().isoformat()
+    items = "\n".join(
+        f"  <url><loc>{esc(url)}</loc><lastmod>{today}</lastmod></url>"
+        for url in public_urls()
+    )
+    return ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n"
+            f"{items}\n</urlset>\n")
+
+
+def robots_txt():
+    return f"User-agent: *\nAllow: /\n\nSitemap: {DOMAIN}/sitemap.xml\n"
+
+
 def main():
     css = (SRC / "styles.css").read_text(encoding="utf-8")
     js = (SRC / "app.js").read_text(encoding="utf-8")
@@ -560,12 +649,16 @@ def main():
     print("ok", copy_product_images(), "fotos de aparelhos ->", DIST / PRODUCT_IMG_DIR)
     copy_video()
     copy_photos()
+    copy_branding()
     for city in [None] + CITIES:
         base = DIST / city["slug"] if city else DIST
         write(base / "index.html", build_page(city, "home", css, js, logo, logo_w, brands))
         write(base / "servicos" / "index.html", build_page(city, "servicos", css, js, logo, logo_w, brands))
-    # cópia da home na raiz do repositório, só para abrir no navegador (aponta para dist/)
-    write(ROOT / "index.html", build_page(None, "home", css, js, logo, logo_w, brands, root_prefix="dist/"))
+    # A Hostinger publica a raiz do repositório; o .htaccess encaminha os ativos e as rotas para dist/.
+    write(ROOT / "index.html", build_page(None, "home", css, js, logo, logo_w, brands, root_prefix="./"))
+    for base in (ROOT, DIST):
+        write(base / "sitemap.xml", sitemap_xml())
+        write(base / "robots.txt", robots_txt())
 
 
 if __name__ == "__main__":

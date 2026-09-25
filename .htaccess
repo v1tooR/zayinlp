@@ -1,0 +1,59 @@
+Options -Indexes
+
+RewriteEngine On
+
+# Um único host evita que www e sem-www concorram no Google.
+RewriteCond %{HTTP_HOST} ^www\.zayinarcondicionado\.com\.br$ [NC]
+RewriteRule ^ https://zayinarcondicionado.com.br%{REQUEST_URI} [R=301,L,NE]
+
+# Remove nomes de arquivo e o antigo /dist/ das URLs públicas.
+RewriteCond %{THE_REQUEST} \s/+index\.html(?:[?\s]) [NC]
+RewriteRule ^index\.html$ / [R=301,L]
+RewriteCond %{THE_REQUEST} \s/+dist/index\.html(?:[?\s]) [NC]
+RewriteRule ^dist/index\.html$ / [R=301,L]
+RewriteCond %{THE_REQUEST} \s/+dist/?(?:[?\s]) [NC]
+RewriteRule ^dist/?$ / [R=301,L]
+RewriteCond %{THE_REQUEST} \s/+dist/(.+?)/index\.html(?:[?\s]) [NC]
+RewriteRule ^dist/(.+?)/index\.html$ /$1/ [R=301,L,NE]
+RewriteCond %{THE_REQUEST} \s/+dist/([^?\s]+) [NC]
+RewriteRule ^dist/(.+)$ /$1 [R=301,L,NE]
+RewriteCond %{THE_REQUEST} \s/+teste-video\.html(?:[?\s]) [NC]
+RewriteRule ^teste-video\.html$ / [R=301,L]
+
+# Arquivos de desenvolvimento não são páginas públicas.
+RewriteRule ^(?:src|assets)(?:/|$) - [R=404,L]
+RewriteRule ^(?:build\.py|README\.md)$ - [R=404,L,NC]
+
+# Normaliza páginas conhecidas com barra final.
+RewriteCond %{REQUEST_URI} !/$
+RewriteCond %{DOCUMENT_ROOT}/dist/$1/index.html -f
+RewriteRule ^(.+)$ /$1/ [R=301,L,NE]
+
+# A publicação atual usa a raiz; os arquivos gerados permanecem organizados em dist/.
+RewriteCond %{DOCUMENT_ROOT}/dist/$1/$2 -f
+RewriteRule ^(img|video)/(.+)$ dist/$1/$2 [L]
+RewriteCond %{DOCUMENT_ROOT}/dist/$1/index.html -f
+RewriteRule ^(.+?)/?$ dist/$1/index.html [L]
+
+# Cache longo para arquivos versionáveis e curto para HTML/SEO.
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/avif "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType video/mp4 "access plus 1 year"
+  ExpiresByType text/html "access plus 1 hour"
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(?:webp|svg|mp4)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.(?:html|xml|txt)$">
+    Header set Cache-Control "public, max-age=3600, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml application/xml application/json application/javascript image/svg+xml
+</IfModule>
